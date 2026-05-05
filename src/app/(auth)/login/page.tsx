@@ -1,4 +1,4 @@
-import * as z from 'zod/v4-mini'
+import * as z from 'zod/v4-mini';
 
 const scheme = z.object({
   email: z.email().check(
@@ -11,4 +11,4 @@ const scheme = z.object({
     ),
   ),
   password: z.string().check(z.minLength(8, 'Minimum length is 8 symbols')),
-})
+});
