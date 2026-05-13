@@ -1,5 +1,5 @@
 import { useFormFieldContext } from '@contexts/FormFieldContext';
-import { Props } from '@shared/types/other.types';
+import { Props } from '@shared/types/index';
 import { Text } from '@ui/typography/Text';
 import { FC } from 'react';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { AnyFunction, Props } from '@shared/types/other.types';
+import { AnyFunction, Props } from '@shared/types/index';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useForm } from 'react-hook-form';
 import { Container } from '@ui/Container';

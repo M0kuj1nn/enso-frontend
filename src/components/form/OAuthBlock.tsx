@@ -1,41 +1,41 @@
+'use client';
+
 import { FC } from 'react';
 import { Text } from '@ui/typography/Text';
 import { Container } from '@ui/Container';
 import { OAuthButton } from './OAuthButton';
-import GoogleIcon from '@icons/Google.svg';
-import GitHubIcon from '@icons/GitHub.svg';
+import { Button } from '@ui/Button';  //ЗАМЕНИТЬ КНОПКИ НА OAuthButton
+import YandexIcon from '@icons/yandex.svg';
+import GoogleIcon from '@icons/google.svg';
+
 
 export const OAuthBlock: FC = () => (
-  <Container className='p-0 gap-4' variants={{ flow: 'col', items: 'centered' }}>
-    <Container className='w-full p-0' variants={{ items: 'centered' }}>
-      <span className='flex-1/4 border-1 dark:border-dark-300 border-light-300' />
-      <Text as='span'>Or continue with</Text>
-      <span className='flex-1/4 border-1 dark:border-dark-300 border-light-300' />
+  <Container className='p-0 gap-4 mt-5' variantsUi={{ flow: 'col', items: 'centered' }}>
+    {/* Divider */}
+    <Container className='w-full p-0' variantsUi={{ items: 'centered' }}>
+      <span className='flex-1 border-t border-[#27272D]' />
+      <Text as='span' className='px-3' variantsUi={{ size: 'xs', color: 'muted' }}>
+        войти через
+      </Text>
+      <span className='flex-1 border-t border-[#27272D]' />
     </Container>
-    <Container
-      className='w-full p-0 flex-nowrap'
-      variants={{ items: 'centered' }}
-    >
-      <OAuthButton
+
+    {/* Кнопки */}
+    <Container className=' p-0 gap-5' variantsUi={{ items: 'centered' }}>
+      <Button
         className='w-full'
-        type='button'
-        provider='google'
-        defaultCallback='/today'
-        variants={{ color: 'ghost', border: 'main' }}
+        variantsUi={{ color: 'gray', border: 'main', size: 'sm' }}
       >
-        <GoogleIcon />
+        <YandexIcon className='w-4 h-4' />
+        Yandex
+      </Button>
+      <Button
+        className='w-full'
+        variantsUi={{ color: 'gray', border: 'main', size: 'sm' }}
+      >
+        <GoogleIcon className='w-4 h-4' />
         Google
-      </OAuthButton>
-      <OAuthButton
-        className='w-full'
-        type='button'
-        provider='github'
-        defaultCallback='/today'
-        variants={{ color: 'ghost', border: 'main' }}
-      >
-        <GitHubIcon />
-        Github
-      </OAuthButton>
+      </Button>
     </Container>
   </Container>
 );

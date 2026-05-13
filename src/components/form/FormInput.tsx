@@ -1,7 +1,7 @@
 'use client';
 
 import { FC } from 'react';
-import { Props } from '@shared/types/other.types';
+import { Props } from '@shared/types/index';
 import { useFormContext } from '@contexts/FormContext';
 import { Input } from '@ui/Input';
 import { useFormFieldContext } from '@contexts/FormFieldContext';

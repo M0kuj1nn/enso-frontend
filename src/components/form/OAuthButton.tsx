@@ -1,7 +1,7 @@
 'use client';
 
 import { AuthErrors } from '@shared/constants/error.constants';
-import { Props } from '@shared/types/other.types';
+import { Props } from '@shared/types/index';
 import { Button } from '@ui/Button';
 import { OAuthProviderType } from 'next-auth/providers/oauth-types';
 import { signIn } from 'next-auth/react';

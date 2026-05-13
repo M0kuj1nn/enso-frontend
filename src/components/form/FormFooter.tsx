@@ -9,9 +9,10 @@ interface FormFooterProps {
 }
 
 const FormFooter: FC<FormFooterProps> = ({ text, linkText, path }) => (
-  <Text as='span' className='gap-2' variants={{ size: 'xs' }}>
+  <Text as='span' className='gap-2 mt-6' variantsUi={{ size: 'xs', color: 'muted' }}>
     {text}
-    <Link href={path} className='text-indigo-400 hover:text-indigo-400/80'>
+    {' '}
+    <Link href={path} className='text-[#A74BE9] hover:opacity-80 transition-opacity'>
       {linkText}
     </Link>
   </Text>

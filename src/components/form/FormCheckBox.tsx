@@ -2,7 +2,7 @@
 
 import { FC } from 'react';
 import { Container } from '@ui/Container';
-import { Props } from '@shared/types/other.types';
+import { Props } from '@shared/types/index';
 import { useFormContext } from '@contexts/FormContext';
 
 interface FormCheckBoxProps extends Omit<Props<typeof Container>, 'as'> {
@@ -18,7 +18,7 @@ export const FormCheckBox: FC<FormCheckBoxProps> = ({
   const { name = 'name', ...rest } = intputProps;
 
   return (
-    <Container className='w-full' variants={{ items: 'centered' }} {...props}>
+    <Container className='w-full' variantsUi={{ items: 'centered' }} {...props}>
       <input type='checkbox' {...rest} {...register(name)} />
       {children}
     </Container>

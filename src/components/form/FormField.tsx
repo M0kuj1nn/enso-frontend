@@ -2,11 +2,11 @@
 
 import { FC } from 'react';
 import { Container } from '@ui/Container';
-import { Props } from '@shared/types/other.types';
+import { Props } from '@shared/types/index';
 import { useFormContext } from '@contexts/FormContext';
 import { FormFieldContext } from '@contexts/FormFieldContext';
 import { Text } from '@ui/typography/Text';
-import { Conditional } from '@components/Conditional';
+import { Conditional } from '@components/Conditionals';
 
 interface FormFieldProps extends Props<typeof Container> {
   name: string;
@@ -27,7 +27,7 @@ export const FormField: FC<FormFieldProps> = ({
   return (
     <Container
       cn={['w-full relative p-0 group/field', className]}
-      variants={{ flow: 'col', items: 'start' }}
+      variantsUi={{ flow: 'col', items: 'start' }}
       {...props}
     >
       <FormFieldContext.Provider value={{ name }}>
