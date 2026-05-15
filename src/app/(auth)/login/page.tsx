@@ -1,5 +1,6 @@
 'use client';
 
+import AnimatedBackground from '@components/AnimatedBackground';
 import { Form } from '@components/form/Form';
 import { FormField } from '@components/form/FormField';
 import FormFooter from '@components/form/FormFooter';
@@ -33,70 +34,61 @@ const Login = () => {
   return (
     <Container
       as='main'
-      className='size-full bg-[#1A1A1F]'
-      style={{
-        backgroundImage: 'url(/static/svg/abstractBackground.svg)',
-        backgroundSize: '1000px auto',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
+      className='relative size-full overflow-auto bg-[#1A1A1F]'
       variantsUi={{ flow: 'col', items: 'centered' }}
     >
-      <div
-        className='pointer-events-none absolute select-none'
-        style={{
-          right: '50%',
-          top: '50%',
-          transform: 'translateX(calc(265px + 50%)) translateY(-50%)',
-          width: '500px',
-          height: '500px',
-          backgroundImage: 'url(/static/svg/greyArma.svg)',
-          backgroundSize: 'contain',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
-      <Container
-        className='mr-[240] w-full max-w-[480] rounded-2xl bg-[#141418] p-18'
-        variantsUi={{ flow: 'col', items: 'centered' }}
-      >
-        <FormHeader title='Добро Пожаловать!'>
-          Магия общения начинается прямо здесь
-        </FormHeader>
-        <Form
-          schema={scheme}
-          onSubmit={onSubmit}
-          className='mt-8 w-full gap-5 p-0'
-          variantsUi={{ flow: 'col' }}
+      <AnimatedBackground />
+
+      <div className='relative flex w-300 items-center justify-center'>
+        <div className='pointer-events-none absolute inset-0 overflow-hidden'>
+          <Container className='absolute top-1/2 left-55 z-5 h-250 w-250 -translate-y-1/2 bg-[url(/static/svg/smallBg.svg)] bg-contain bg-center bg-no-repeat opacity-50' />
+        </div>
+        <Container
+          className='relative z-10 w-120 shrink-0 rounded-4xl p-18'
+          variantsUi={{ flow: 'col', items: 'centered', style: 'whiteglass' }}
         >
-          <FormField name='email'>
-            <FormInput placeholder='Email'></FormInput>
-          </FormField>
-
-          <FormField name='password'>
-            <FormInput placeholder='Пароль'></FormInput>
-          </FormField>
-
-          <Text
-            as='span'
-            className='cursor-pointer self-start hover:opacity-80'
-            variantsUi={{ size: 'xs', color: 'accent' }}
+          <FormHeader title='Добро Пожаловать!'>
+            Магия общения начинается прямо здесь
+          </FormHeader>
+          <Form
+            schema={scheme}
+            onSubmit={onSubmit}
+            className='mt-8 w-full gap-5 p-0'
+            variantsUi={{ flow: 'col' }}
           >
-            Забыли пароль?
-          </Text>
+            <FormField name='email'>
+              <FormInput placeholder='Email'></FormInput>
+            </FormField>
 
-          <Button variantsUi={{ wide: true, color: 'glamor' }} className='mt-4'>
-            Войти
-          </Button>
+            <FormField name='password'>
+              <FormInput placeholder='Пароль'></FormInput>
+            </FormField>
 
-          <OAuthBlock title='Войти через' />
-        </Form>
-        <FormFooter
-          text='Еще нет аккаунта?'
-          linkText='Создай прямо сейчас!'
-          path='/registration'
-        />
-      </Container>
+            <Text
+              as='span'
+              className='cursor-pointer self-start hover:opacity-80'
+              variantsUi={{ size: 'xs', color: 'accent' }}
+            >
+              Забыли пароль?
+            </Text>
+
+            <Button
+              variantsUi={{ wide: true, color: 'glamor' }}
+              className='mt-4'
+            >
+              Войти
+            </Button>
+
+            <OAuthBlock title='Войти через' />
+          </Form>
+          <FormFooter
+            text='Еще нет аккаунта?'
+            linkText='Создай прямо сейчас!'
+            path='/registration'
+          />
+        </Container>
+        <Container className='pointer-events-none absolute top-1/2 -right-9 z-20 h-125 w-125 -translate-y-1/2 bg-[url(/static/svg/greyArma.svg)] bg-contain bg-center bg-no-repeat select-none' />
+      </div>
     </Container>
   );
 };

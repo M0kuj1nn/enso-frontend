@@ -28,6 +28,12 @@ export const Container = ve(
         md: 'rounded-md',
         full: 'rounded-full',
       },
+
+      style: {
+        whiteglass:
+          'bg-white/2 backdrop-blur-2xl shadow-[inset_2px_1px_0_rgba(255,255,255,0.30),inset_-1px_-0.5px_0_rgba(255,255,255,0.14),inset_1px_0_0_rgba(255,255,255,0.06),inset_0_1px_0_rgba(255,255,255,0.06),inset_-1px_0_0_rgba(0,0,0,0.06),inset_0_-1px_0_rgba(255,255,255,0.06)]',
+        blackglass: 'bg-black/20 backdrop-blur-xl',
+      },
     },
   }),
 );

@@ -1,10 +1,11 @@
 'use client';
 
 import { FC } from 'react';
-import { Props } from '@shared/types/index';
+
 import { useFormContext } from '@contexts/FormContext';
-import { Input } from '@ui/Input';
 import { useFormFieldContext } from '@contexts/FormFieldContext';
+import { Props } from '@shared/types/index';
+import { Input } from '@ui/Input';
 
 interface FormInputProps extends Omit<Props<typeof Input>, 'as' | 'name'> {
   as?: 'input' | 'textarea' | 'option' | 'select';
@@ -14,5 +15,13 @@ export const FormInput: FC<FormInputProps> = ({ as = 'input', ...props }) => {
   const { name } = useFormFieldContext();
   const { register } = useFormContext();
 
-  return <Input as={as} id={name} {...props} {...register(name)} />;
+  return (
+    <Input
+      as={as}
+      id={name}
+      variantsUi={{ style: 'white-glass-form-field' }}
+      {...props}
+      {...register(name)}
+    />
+  );
 };

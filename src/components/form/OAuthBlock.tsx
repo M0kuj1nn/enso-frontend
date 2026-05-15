@@ -26,7 +26,7 @@ export const OAuthBlock: FC<OAuthBlockProps> = ({ title, ...props }) => (
   >
     {/* Divider */}
     <Container className='w-full p-0' variantsUi={{ items: 'centered' }}>
-      <span className='flex-1 border-t border-[#27272D]' />
+      <span className='flex-1 border-t border-[#5e5e69]' />
       <Text
         as='span'
         className='px-3'
@@ -34,7 +34,7 @@ export const OAuthBlock: FC<OAuthBlockProps> = ({ title, ...props }) => (
       >
         {title}
       </Text>
-      <span className='flex-1 border-t border-[#27272D]' />
+      <span className='flex-1 border-t border-[#5e5e69]' />
     </Container>
 
     {/* Кнопки */}
