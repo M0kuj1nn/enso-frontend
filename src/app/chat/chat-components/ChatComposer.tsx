@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, KeyboardEvent, useState } from 'react';
+import { FC, KeyboardEvent, memo, useState } from 'react';
 
 import { Button } from '@ui/Button';
 import { Container } from '@ui/Container';
@@ -11,7 +11,7 @@ interface ChatComposerProps {
   onSend: (content: string) => void;
 }
 
-export const ChatComposer: FC<ChatComposerProps> = ({ onSend }) => {
+export const ChatComposer: FC<ChatComposerProps> = memo(({ onSend }) => {
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
@@ -29,16 +29,15 @@ export const ChatComposer: FC<ChatComposerProps> = ({ onSend }) => {
   };
 
   return (
-    <Container cn='px-6 py-4 flex-shrink-0 border-t border-white/5 p-0 px-6 py-4'>
-      <Container cn='gap-2 bg-[#25252c] rounded-full px-4 py-2 w-full p-0 px-4 py-2'>
+    <Container className='shrink-0 border-t border-white/5 p-0 px-6 py-4'>
+      <Container className='w-full gap-2 rounded-full bg-[#25252c] p-0 px-4 py-2'>
         <Button
           variantsUi={{ color: 'ghost', rounded: 'lg' }}
-          cn='p-1.5 flex-shrink-0'
+          className='shrink-0 p-1.5'
         >
           <Paperclip className='h-4 w-4' />
         </Button>
 
-        {/* as='textarea' — паттерн из FormInput */}
         <Input
           as='textarea'
           variantsUi={{ style: 'search' }}
@@ -52,7 +51,7 @@ export const ChatComposer: FC<ChatComposerProps> = ({ onSend }) => {
 
         <Button
           variantsUi={{ color: 'ghost', rounded: 'lg' }}
-          cn='p-1.5 flex-shrink-0'
+          className='shrink-0 p-1.5'
         >
           <Smile className='h-4 w-4' />
         </Button>
@@ -62,7 +61,7 @@ export const ChatComposer: FC<ChatComposerProps> = ({ onSend }) => {
             color: message.trim() ? 'primary' : 'ghost',
             rounded: 'lg',
           }}
-          cn='p-1.5 flex-shrink-0'
+          className='shrink-0 p-1.5'
           onClick={handleSend}
           disabled={!message.trim()}
         >
@@ -71,4 +70,6 @@ export const ChatComposer: FC<ChatComposerProps> = ({ onSend }) => {
       </Container>
     </Container>
   );
-};
+});
+
+ChatComposer.displayName = 'ChatComposer';

@@ -18,9 +18,10 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [messages, setMessages] =
     useState<Record<string, Message[]>>(MOCK_MESSAGES);
 
+  // Участники каждого чата (join по participantIds)
   const participants: Record<string, Participant[]> = chats.reduce(
     (acc, chat) => {
-      const members = chat.participantIds.map((id) => {
+      const members = chat.participantIds.map<Participant>((id) => {
         if (id === 'me') return CURRENT_USER;
         return MOCK_SEARCHABLE_USERS.find((u) => u.id === id) ?? CURRENT_USER;
       });
@@ -30,29 +31,35 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   );
 
   // ─── sendMessage ─────────────────────────────────────────────────────────
-  // WS: заменить setMessages на ws.send({ type: 'MESSAGE_CREATED', ... })
-  //     Оставить оптимистичное добавление до подтверждения от сервера
-  const sendMessage = (chatId: string, content: string) => {
-    const msg: Message = {
+  // WS: заменить на ws.send({ type: 'MESSAGE_CREATED', payload: { text, reply_to, ... } })
+  //     Оставить оптимистичное добавление пока сервер не подтвердил
+  const sendMessage = (chatId: string, text: string, replyTo?: string) => {
+    const now = new Date().toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const newMsg: Message = {
       id: `local-${Date.now()}`,
-      chatId,
-      senderId: 'me',
+      text,
+      sender_id: CURRENT_USER.id,
+      receiver_id: null,
+      media_links: [],
+      is_read: false,
+      reactions: [],
+      reply_to: replyTo ?? null,
+      created_at: now,
+      updated_at: now,
       sender: CURRENT_USER.name,
       avatar: CURRENT_USER.avatar,
-      timestamp: new Date().toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      content,
       isOwn: true,
     };
     setMessages((prev) => ({
       ...prev,
-      [chatId]: [...(prev[chatId] ?? []), msg],
+      [chatId]: [...(prev[chatId] ?? []), newMsg],
     }));
     setChats((prev) =>
       prev.map((c) =>
-        c.id === chatId ? { ...c, lastMessage: content, unread: 0 } : c,
+        c.id === chatId ? { ...c, lastMessage: text, unread: 0 } : c,
       ),
     );
   };
@@ -70,7 +77,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   // ─── addFriend ────────────────────────────────────────────────────────────
-  // WS: заменить на POST /api/friends/request или ws.send({ type: 'FRIEND_REQUEST_SENT' })
+  // WS: заменить на POST /api/friends/request  (+ WS event FRIEND_REQUEST_SENT)
   const addFriend = (userId: string) => {
     const user = MOCK_SEARCHABLE_USERS.find((u) => u.id === userId);
     if (!user || friends.some((f) => f.id === userId)) return;
@@ -78,7 +85,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   // ─── createDm ────────────────────────────────────────────────────────────
-  // WS: заменить на POST /api/chats/dm + ws.on('CHAT_CREATED')
+  // WS: заменить на POST /api/chats/dm  (+ WS event CHAT_CREATED)
   const createDm = (friendId: string): Chat => {
     const existing = chats.find(
       (c) => c.type === 'dm' && c.participantIds.includes(friendId),
@@ -101,7 +108,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   // ─── createGroup ─────────────────────────────────────────────────────────
-  // WS: заменить на POST /api/chats/group + ws.on('CHAT_CREATED')
+  // WS: заменить на POST /api/chats/group  (+ WS event CHAT_CREATED)
   const createGroup = (name: string, memberIds: string[]): Chat => {
     const firstMember = friends.find((f) => f.id === memberIds[0]);
     const newChat: Chat = {

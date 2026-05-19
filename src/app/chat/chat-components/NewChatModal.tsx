@@ -67,7 +67,7 @@ export const NewChatModal: FC<NewChatModalProps> = ({
     <Modal isOpen={isOpen} onClose={handleClose}>
       <Container
         variantsUi={{ flow: 'col' }}
-        className='w-[440px] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1f] p-0'
+        className='w-[440] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1f] p-0'
       >
         {/* Шапка */}
         <Container className='gap-4 border-b border-white/5 p-0 px-6 pt-6 pb-4'>
@@ -160,7 +160,7 @@ export const NewChatModal: FC<NewChatModalProps> = ({
                 </Container>
                 <Conditional condition={isSelected && tab === 'group'}>
                   <Container
-                    className='h-5 w-5 flex-shrink-0 rounded-full bg-[#A74BE9] p-0'
+                    className='h-5 w-5 shrink-0 rounded-full bg-[#A74BE9] p-0'
                     variantsUi={{ items: 'centered' }}
                   >
                     <Check className='h-3 w-3 text-white' />
