@@ -1,9 +1,10 @@
 'use client';
 
 import { FC } from 'react';
-import { Container } from '@ui/Container';
-import { Props } from '@shared/types/index';
+
 import { useFormContext } from '@contexts/FormContext';
+import { Props } from '@shared/types/index';
+import { Container } from '@ui/Container';
 
 interface FormCheckBoxProps extends Omit<Props<typeof Container>, 'as'> {
   intputProps?: Omit<Props<'input'>, 'type'>;

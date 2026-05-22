@@ -1,4 +1,4 @@
-import AnimatedBackground from '@components/AnimatedBackground';
+import AnimatedBackground from 'src/app/(auth)/auth-components/AnimatedBackground';
 
 const Home = () => {
   return (

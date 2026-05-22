@@ -1,6 +1,6 @@
-import { tc } from '@shared/utils/tc.util'
-import { ve } from '@shared/utils/ve.util'
-import { cvax } from '@shared/utils/cvax'
+import { cvax } from '@shared/utils/cvax';
+import { tc } from '@shared/utils/tc.util';
+import { ve } from '@shared/utils/ve.util';
 
 export const Text = ve(
   tc('span'),
@@ -26,6 +26,7 @@ export const Text = ve(
         muted: 'text-[#969696]',
         accent: 'text-[#A74BE9]',
         black: 'text-black',
+        red: 'text-red-500',
       },
       weight: {
         regular: 'font-normal',
@@ -40,4 +41,4 @@ export const Text = ve(
       weight: 'regular',
     },
   }),
-)
+);

@@ -1,12 +1,14 @@
 'use client';
 
-import { AuthErrors } from '@shared/constants/error.constants';
-import { Props } from '@shared/types/index';
-import { Button } from '@ui/Button';
+import { FC } from 'react';
+
 import { OAuthProviderType } from 'next-auth/providers/oauth-types';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { FC } from 'react';
+
+import { AuthErrors } from '@shared/constants/error.constants';
+import { Props } from '@shared/types/index';
+import { Button } from '@ui/Button';
 import { toast } from 'sonner';
 
 interface OAuthButtonProps extends Omit<Props<typeof Button>, 'onClick'> {
@@ -31,7 +33,6 @@ export const OAuthButton: FC<OAuthButtonProps> = ({
       if (res?.ok) {
         router.push('/today');
       }
-      
     } catch (error) {
       toast.error(AuthErrors.INTERNAL_ERROR, {
         dismissible: true,

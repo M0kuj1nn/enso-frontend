@@ -13,13 +13,22 @@ interface FormInputProps extends Omit<Props<typeof Input>, 'as' | 'name'> {
 
 export const FormInput: FC<FormInputProps> = ({ as = 'input', ...props }) => {
   const { name } = useFormFieldContext();
-  const { register } = useFormContext();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
+
+  const hasError = !!errors[name]?.message;
 
   return (
     <Input
       as={as}
       id={name}
-      variantsUi={{ style: 'white-glass-form-field' }}
+      variantsUi={{
+        style: hasError
+          ? 'white-glass-form-field-error'
+          : 'white-glass-form-field',
+      }}
       {...props}
       {...register(name)}
     />
