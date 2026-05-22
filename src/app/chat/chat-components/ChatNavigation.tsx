@@ -28,8 +28,7 @@ import {
 import { AddFriendModal } from './AddFriendModal';
 import { NewChatModal } from './NewChatModal';
 
-// ─── ChatItem ─────────────────────────────────────────────────────────────────
-
+// ChatItem
 interface ChatItemProps {
   chat: Chat;
   isActive: boolean;
@@ -75,7 +74,9 @@ const ChatItem: FC<ChatItemProps> = memo(({ chat, isActive, onSelect }) => (
         variantsUi={{ size: 'xs', color: 'muted' }}
         className='truncate text-left leading-tight'
       >
-        {chat.lastMessage || 'Нет сообщений'}
+        {chat.lastMessageSenderName
+          ? `${chat.lastMessageSenderName}: ${chat.lastMessage}`
+          : chat.lastMessage || 'Нет сообщений'}
       </Text>
     </Container>
   </Button>
@@ -83,9 +84,8 @@ const ChatItem: FC<ChatItemProps> = memo(({ chat, isActive, onSelect }) => (
 
 ChatItem.displayName = 'ChatItem';
 
-// ─── NavStrip ─────────────────────────────────────────────────────────────────
-// Левая узкая колонка: бургер, DM, серверы, мини-панель пользователя
-
+// NavStrip
+// Крайняя левая колонка с Бургер меню, DM и серваками
 interface NavStripProps {
   isPanelOpen: boolean;
   isMuted: boolean;
@@ -118,10 +118,10 @@ const NavStrip: FC<NavStripProps> = memo(
       >
         <Container
           variantsUi={{ flow: 'col' }}
-          className='flex-1 gap-0 overflow-y-auto p-0 py-3'
+          className='flex-1 gap-0 overflow-y-auto p-0'
         >
           {/* Бургер */}
-          <Container className='p-0 px-3 pb-2'>
+          <Container className='h-16 items-center p-0 px-3'>
             <Button
               variantsUi={{ color: 'ghost', rounded: 'xl' }}
               className='h-10 w-10 p-0'
@@ -133,7 +133,7 @@ const NavStrip: FC<NavStripProps> = memo(
           </Container>
 
           {/* DM */}
-          <Container className='p-0 px-3 pb-2'>
+          <Container className='items-center p-0 px-3 py-3'>
             <Button
               variantsUi={{
                 color: isDmActive ? 'primary' : 'ghost',
@@ -148,12 +148,12 @@ const NavStrip: FC<NavStripProps> = memo(
           </Container>
 
           {/* Разделитель */}
-          <Container className='p-0 px-3 py-2'>
+          <Container className='p-0 px-3'>
             <Container className='h-[1] w-full rounded-full bg-white/10 p-0' />
           </Container>
 
           {/* Серверы */}
-          <Container className='p-0 px-3'>
+          <Container className='p-0 px-3 pt-3'>
             <Button
               variantsUi={{ color: 'ghost', rounded: 'full' }}
               className='h-10 w-10 border border-dashed border-white/20 p-0'
@@ -164,6 +164,7 @@ const NavStrip: FC<NavStripProps> = memo(
           </Container>
         </Container>
 
+        {/* Профиль — только когда NavPanel свёрнут */}
         {!isPanelOpen && (
           <Container className='gap-0 border-t border-white/5 p-2'>
             <Container
@@ -207,7 +208,9 @@ const NavStrip: FC<NavStripProps> = memo(
 
 NavStrip.displayName = 'NavStrip';
 
-// ─── NavPanel ─────────────────────────────────────────────────────────────────
+NavStrip.displayName = 'NavStrip';
+
+// NavPanel
 // Раскрывающаяся панель: поиск, список чатов, полная панель пользователя
 
 interface NavPanelProps {
@@ -379,7 +382,7 @@ const NavPanel: FC<NavPanelProps> = memo(
 
 NavPanel.displayName = 'NavPanel';
 
-// ─── ChatNavigation ───────────────────────────────────────────────────────────
+// ChatNavigation
 // Композиция: только состояние и роутинг, никакого JSX кроме сборки частей
 
 export const ChatNavigation: FC = () => {

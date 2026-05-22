@@ -26,7 +26,7 @@ export interface ChatContextValue {
 
   createGroup: (name: string, memberIds: string[]) => Chat;
 
-  // WS: эти методы добавятя когда бэк будем готовы к слиянию
+  // WS: эти методы добавятя когда бэк будет готов к слиянию
   // addReaction:    (messageId: string, emoji: string) => void
   // removeReaction: (messageId: string, emoji: string) => void
   // editMessage:    (messageId: string, text: string)  => void

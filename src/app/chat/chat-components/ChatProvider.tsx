@@ -30,7 +30,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     {},
   );
 
-  // ─── sendMessage ─────────────────────────────────────────────────────────
+  // sendMessage
   // WS: заменить на ws.send({ type: 'MESSAGE_CREATED', payload: { text, reply_to, ... } })
   //     Оставить оптимистичное добавление пока сервер не подтвердил
   const sendMessage = (chatId: string, text: string, replyTo?: string) => {
@@ -59,12 +59,14 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }));
     setChats((prev) =>
       prev.map((c) =>
-        c.id === chatId ? { ...c, lastMessage: text, unread: 0 } : c,
+        c.id === chatId
+          ? { ...c, lastMessage: text, LastMessageSenderName: 'Вы', unread: 0 }
+          : c,
       ),
     );
   };
 
-  // ─── searchUsers ──────────────────────────────────────────────────────────
+  // searchUsers
   // WS: заменить на GET /api/users/search?q=query
   const searchUsers = (query: string): User[] => {
     if (!query.trim()) return [];
@@ -76,7 +78,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     );
   };
 
-  // ─── addFriend ────────────────────────────────────────────────────────────
+  // addFriend
   // WS: заменить на POST /api/friends/request  (+ WS event FRIEND_REQUEST_SENT)
   const addFriend = (userId: string) => {
     const user = MOCK_SEARCHABLE_USERS.find((u) => u.id === userId);
@@ -84,7 +86,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setFriends((prev) => [...prev, { ...user, friendState: 'friends' }]);
   };
 
-  // ─── createDm ────────────────────────────────────────────────────────────
+  // createDm
   // WS: заменить на POST /api/chats/dm  (+ WS event CHAT_CREATED)
   const createDm = (friendId: string): Chat => {
     const existing = chats.find(

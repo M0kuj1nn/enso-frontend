@@ -1,11 +1,12 @@
 'use client';
 
-import { FC, memo, useState } from 'react';
+import { FC, memo, useCallback, useState } from 'react';
 
 import { Conditional } from '@components/Conditionals';
 import { useChatContext } from '@contexts/ChatContext';
 import { useDebounce } from '@shared/hooks/useDebounce';
 import { User } from '@shared/types/chat';
+import { useQuery } from '@tanstack/react-query';
 import { Avatar } from '@ui/Avatar';
 import { Button } from '@ui/Button';
 import { Container } from '@ui/Container';
@@ -14,7 +15,9 @@ import { Modal } from '@ui/Modal';
 import { Text } from '@ui/typography/Text';
 import { Check, Search, UserPlus } from 'lucide-react';
 
-// ─── FriendEntry ──────────────────────────────────────────────────────────────
+// FriendEntry
+// memo теперь работает корректно: tanstack query возвращает стабильные ссылки
+// на объекты из кэша - shallow-сравнение проходит - лишних ререндеров нет вроде как
 
 type FriendEntryState = 'none' | 'just_added' | 'already_friend';
 
@@ -60,7 +63,7 @@ const FriendEntry: FC<FriendEntryProps> = memo(({ user, state, onAdd }) => (
 
 FriendEntry.displayName = 'FriendEntry';
 
-// ─── AddFriendModal ───────────────────────────────────────────────────────────
+// AddFriendModal
 
 interface AddFriendModalProps {
   isOpen: boolean;
@@ -75,9 +78,19 @@ export const AddFriendModal: FC<AddFriendModalProps> = ({
   const [query, setQuery] = useState('');
   const [added, setAdded] = useState<Set<string>>(new Set());
 
-  // Запрос на бэкенд будет срабатывать только после паузы в 300мс
   const debouncedQuery = useDebounce(query, 300);
-  const results = searchUsers(debouncedQuery);
+
+  const { data: results = [], isFetching } = useQuery({
+    // уникальный ключ
+    queryKey: ['users', 'search', debouncedQuery],
+    // WS/API: заменить на fetch(`/api/users/search?q=${debouncedQuery}`).then(r => r.json())
+    queryFn: () => searchUsers(debouncedQuery),
+    // Не делаем запрос пока поле пустое
+    enabled: debouncedQuery.trim().length > 0,
+    // Данные из кэша считаются актуальными 1 минуту - повторного запроса не будет
+    staleTime: 60_000,
+    placeholderData: [],
+  });
 
   const getFriendState = (user: User): FriendEntryState => {
     if (added.has(user.id)) return 'just_added';
@@ -85,10 +98,13 @@ export const AddFriendModal: FC<AddFriendModalProps> = ({
     return 'none';
   };
 
-  const handleAdd = (user: User) => {
-    addFriend(user.id);
-    setAdded((prev) => new Set(prev).add(user.id));
-  };
+  const handleAdd = useCallback(
+    (user: User) => {
+      addFriend(user.id);
+      setAdded((prev) => new Set(prev).add(user.id));
+    },
+    [addFriend],
+  );
 
   const handleClose = () => {
     setQuery('');
@@ -102,7 +118,7 @@ export const AddFriendModal: FC<AddFriendModalProps> = ({
         variantsUi={{ flow: 'col' }}
         className='w-[480] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1f] p-0'
       >
-        {/* Шапка */}
+        {/* Header */}
         <Container
           variantsUi={{ flow: 'col' }}
           className='gap-1 border-b border-white/5 px-6 pt-6 pb-4'
@@ -116,24 +132,37 @@ export const AddFriendModal: FC<AddFriendModalProps> = ({
         </Container>
 
         {/* Поиск */}
-        <Container className='relative px-6 py-4'>
-          <Search className='pointer-events-none absolute top-1/2 left-9 z-10 h-4 w-4 -translate-y-1/2 text-[#969696]' />
-          <Input
-            variantsUi={{ style: 'search' }}
-            placeholder='Найти пользователя...'
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            autoFocus
-          />
+        <Container className='px-6 py-4'>
+          <Container className='relative w-full p-0'>
+            <Search className='pointer-events-none absolute top-1/2 left-3 z-10 h-4 w-4 -translate-y-1/2 text-[#969696]' />
+            <Input
+              variantsUi={{ style: 'search' }}
+              className='pl-9'
+              placeholder='Найти пользователя...'
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              autoFocus
+            />
+          </Container>
         </Container>
 
-        {/* Результаты */}
+        {/* Resaults */}
         <Container
           variantsUi={{ flow: 'col' }}
           className='max-h-72 gap-1 overflow-y-auto px-4 pb-4'
         >
+          <Conditional condition={isFetching}>
+            <Container variantsUi={{ items: 'centered' }} className='py-6'>
+              <Text variantsUi={{ size: 'sm', color: 'muted' }}>Поиск...</Text>
+            </Container>
+          </Conditional>
+
           <Conditional
-            condition={debouncedQuery.trim().length > 0 && results.length === 0}
+            condition={
+              !isFetching &&
+              debouncedQuery.trim().length > 0 &&
+              results.length === 0
+            }
           >
             <Container variantsUi={{ items: 'centered' }} className='py-8'>
               <Text variantsUi={{ size: 'sm', color: 'muted' }}>
@@ -142,14 +171,15 @@ export const AddFriendModal: FC<AddFriendModalProps> = ({
             </Container>
           </Conditional>
 
-          {results.map((user) => (
-            <FriendEntry
-              key={user.id}
-              user={user}
-              state={getFriendState(user)}
-              onAdd={handleAdd}
-            />
-          ))}
+          {!isFetching &&
+            results.map((user) => (
+              <FriendEntry
+                key={user.id}
+                user={user}
+                state={getFriendState(user)}
+                onAdd={handleAdd}
+              />
+            ))}
 
           <Conditional condition={debouncedQuery.trim().length === 0}>
             <Container variantsUi={{ items: 'centered' }} className='py-8'>
@@ -160,7 +190,6 @@ export const AddFriendModal: FC<AddFriendModalProps> = ({
           </Conditional>
         </Container>
 
-        {/* Кнопка закрытия */}
         <Container className='justify-end border-t border-white/5 px-6 py-4'>
           <Button
             variantsUi={{ color: 'ghost', size: 'sm', rounded: 'xl' }}

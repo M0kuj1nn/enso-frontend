@@ -1,11 +1,9 @@
-// ─── Базовые типы ────────────────────────────────────────────────────────────
-
+// Базовые типы
 export type ChatType = 'dm' | 'group';
 export type UserStatus = 'online' | 'away' | 'offline';
 export type FriendState = 'none' | 'pending_out' | 'pending_in' | 'friends';
 
-// ─── Пользователь ────────────────────────────────────────────────────────────
-
+// Пользователь
 export interface User {
   id: string;
   username: string; // уникальный тег (@username)
@@ -20,30 +18,27 @@ export interface Friend extends User {
 
 export interface Participant extends User {}
 
-// ─── Реакция на сообщение ────────────────────────────────────────────────────
-
+// Реакция на сообщение
 export interface Reaction {
   emoji: string;
   count: number;
-  user_ids: string[]; // кто поставил
+  user_ids: string[];
 }
 
-// ─── Сообщение (поля 1-в-1 с бэком) ─────────────────────────────────────────
-
+// Сообщение
 export interface Message {
   // Поля от бэка
   id: string;
   text: string;
   sender_id: string;
   receiver_id: string | null; // null для групповых чатов
-  media_links: string[]; // вложения (фото, файлы и т.д.)
+  media_links: string[]; // вложения
   is_read: boolean;
   reactions: Reaction[];
   reply_to: string | null; // id сообщения на которое отвечаем
   created_at: string; // ISO дата или HH:mm для мока
   updated_at: string;
 
-  // Производные поля фронта (получаются join'ом из users cache)
   // WS: эти поля заполнять из usersCache по sender_id
   sender: string; // display name
   avatar: string; // url аватара
@@ -57,6 +52,7 @@ export interface Chat {
   name: string;
   avatar: string;
   lastMessage: string;
+  lastMessageSenderName?: string; // <- добавить. "Вы" / "Кто-то" / undefined
   unread: number;
   participantIds: string[];
 }
@@ -89,7 +85,7 @@ export interface Role {
   color: string;
 }
 
-// WS-события (готовы к подключению)
+// WS-события
 // WS: ws.on('message', (event: WsChatEvent) => dispatch(event))
 
 export type WsChatEvent =

@@ -99,11 +99,10 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
 
         {/* Виртуализированный список сообщений */}
         {chatMessages.length > 0 && (
-          <Container ref={scrollRef} className='flex-1 overflow-y-auto p-0'>
-            {/*
-              Внешний div — фиксированная высота всего списка (даже невидимых элементов).
-              Именно за счёт этого scrollbar ведёт себя правильно.
-            */}
+          <Container
+            ref={scrollRef}
+            className='flex-1 overflow-y-auto p-0 pt-6'
+          >
             <div
               style={{
                 height: `${virtualizer.getTotalSize()}px`,

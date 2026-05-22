@@ -28,7 +28,7 @@ export const Modal: FC<ModalProps> = ({ isOpen, onClose, children }) => {
         variantsUi={{ items: 'centered' }}
         onClick={onClose}
       >
-        {/* Клик внутри — не закрываем */}
+        {/* Клик внутри - не закрываем */}
         <Container
           className='relative p-0'
           onClick={(e) => e.stopPropagation()}

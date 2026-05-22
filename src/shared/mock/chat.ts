@@ -69,6 +69,7 @@ export const MOCK_CHATS: Chat[] = [
     avatar:
       'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop',
     lastMessage: 'Обновлённые макеты в Figma',
+    lastMessageSenderName: 'Sarah',
     unread: 7,
     participantIds: ['me', 'u1', 'u2', 'u3'],
   },
@@ -79,6 +80,7 @@ export const MOCK_CHATS: Chat[] = [
     avatar:
       'https://images.unsplash.com/photo-1573497620166-aef748c8c792?w=100&h=100&fit=crop',
     lastMessage: 'Можем провести быстрый созвон?',
+    lastMessageSenderName: undefined,
     unread: 1,
     participantIds: ['me', 'u1'],
   },
@@ -89,6 +91,7 @@ export const MOCK_CHATS: Chat[] = [
     avatar:
       'https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?w=100&h=100&fit=crop',
     lastMessage: 'Спасибо за фидбек!',
+    lastMessageSenderName: undefined,
     unread: 0,
     participantIds: ['me', 'u2'],
   },
@@ -99,6 +102,7 @@ export const MOCK_CHATS: Chat[] = [
     avatar:
       'https://images.unsplash.com/photo-1752860872185-78926b52ef77?w=100&h=100&fit=crop',
     lastMessage: 'Дизайн выглядит идеально 🎨',
+    lastMessageSenderName: undefined,
     unread: 0,
     participantIds: ['me', 'u3'],
   },
