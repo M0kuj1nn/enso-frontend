@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { useAuth } from '@contexts/AuthContext';
 import { Form } from '@page-components/(auth)/auth-components/form/Form';
 import { FormField } from '@page-components/(auth)/auth-components/form/FormField';
@@ -30,6 +32,7 @@ const scheme = z.object({
 
 const Login = () => {
   const { login, isLoading, error, clearError } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     clearError();
@@ -37,6 +40,7 @@ const Login = () => {
 
   const onSubmit = async (data: z.infer<typeof scheme>) => {
     await login(data);
+    router.push('/hub');
   };
 
   return (

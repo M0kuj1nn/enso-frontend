@@ -1,7 +1,5 @@
 import localFont from 'next/font/local';
 
-import { AuthProvider } from '@contexts/AuthContext';
-
 import './globals.css';
 
 const onest = localFont({
@@ -29,9 +27,7 @@ export default function RootLayout({ children }) {
       lang='ru'
       className={`${onest.className} ${delaGothicOne.variable} ${unbounded.variable} h-full antialiased`}
     >
-      <body className='flex h-screen flex-col'>
-        <AuthProvider>{children}</AuthProvider>
-      </body>
+      <body className='flex h-screen flex-col'>{children}</body>
     </html>
   );
 }

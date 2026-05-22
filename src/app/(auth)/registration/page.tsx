@@ -1,7 +1,8 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { useAuth } from '@contexts/AuthContext';
-import AnimatedBackground from '@page-components/(auth)/auth-components/AnimatedBackground';
 import { Form } from '@page-components/(auth)/auth-components/form/Form';
 import { FormField } from '@page-components/(auth)/auth-components/form/FormField';
 import FormFooter from '@page-components/(auth)/auth-components/form/FormFooter';
@@ -30,9 +31,11 @@ const schema = z.object({
 
 const Registration = () => {
   const { register, isLoading, error } = useAuth();
+  const router = useRouter();
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     await register(data);
+    router.push('/hub');
   };
 
   return (

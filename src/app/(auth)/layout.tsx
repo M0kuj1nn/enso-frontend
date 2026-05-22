@@ -1,4 +1,5 @@
 import AnimatedBackground from '@page-components/(auth)/auth-components/AnimatedBackground';
+import { AuthProvider } from '@page-components/(auth)/auth-components/AuthProvider';
 import { Container } from '@ui/Container';
 
 const AuthLayout = ({ children }) => {
@@ -9,7 +10,7 @@ const AuthLayout = ({ children }) => {
       variantsUi={{ flow: 'col', items: 'centered' }}
     >
       <AnimatedBackground />
-      {children}
+      <AuthProvider>{children}</AuthProvider>
     </Container>
   );
 };
