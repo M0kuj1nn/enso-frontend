@@ -1,12 +1,13 @@
 'use client';
 
 import { FC } from 'react';
-import { Container } from '@ui/Container';
-import { Props } from '@shared/types/index';
+
+import { Conditional } from '@components/Conditionals';
 import { useFormContext } from '@contexts/FormContext';
 import { FormFieldContext } from '@contexts/FormFieldContext';
+import { Props } from '@shared/types/index';
+import { Container } from '@ui/Container';
 import { Text } from '@ui/typography/Text';
-import { Conditional } from '@components/Conditionals';
 
 interface FormFieldProps extends Props<typeof Container> {
   name: string;
@@ -26,7 +27,7 @@ export const FormField: FC<FormFieldProps> = ({
 
   return (
     <Container
-      cn={['w-full relative p-0 group/field', className]}
+      cn={['w-full p-0 group/field', className]}
       variantsUi={{ flow: 'col', items: 'start' }}
       {...props}
     >
@@ -34,7 +35,10 @@ export const FormField: FC<FormFieldProps> = ({
         {children}
       </FormFieldContext.Provider>
       <Conditional condition={showError}>
-        <Text className='self-start absolute bottom-[-1.2rem]'>
+        <Text
+          className='bottom-[-1.2rem] self-start'
+          variantsUi={{ size: 'xs', color: 'red' }}
+        >
           {errors[name]?.message as string}
         </Text>
       </Conditional>

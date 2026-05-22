@@ -1,5 +1,6 @@
 import { FC } from 'react';
-import { FormCheckBox } from '@components/form/FormCheckBox';
+
+import { FormCheckBox } from '@page-components/(auth)/auth-components/form/FormCheckBox';
 
 export const AgreementBlock: FC = () => (
   <FormCheckBox
