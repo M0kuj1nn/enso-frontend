@@ -22,7 +22,7 @@ const MOCK_USERS: MockUser[] = [
     id: '1',
     name: 'JonSnow',
     email: 'jonsnow@email.com',
-    password: '12345678',
+    password: 'YouknownothingJonSnow588',
   },
 ];
 

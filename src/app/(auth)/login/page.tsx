@@ -39,8 +39,10 @@ const Login = () => {
   }, [clearError]);
 
   const onSubmit = async (data: z.infer<typeof scheme>) => {
-    await login(data);
-    router.push('/chat');
+    try {
+      await login(data);
+      router.push('/chat');
+    } catch {}
   };
 
   return (

@@ -25,6 +25,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(userData));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Произошла ошибка');
+      throw e;
     } finally {
       setIsLoading(false);
     }
@@ -39,6 +40,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(userData));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Произошла ошибка');
+      throw e;
     } finally {
       setIsLoading(false);
     }

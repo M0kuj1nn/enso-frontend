@@ -40,6 +40,9 @@
       "@api/*": [
         "src/api/*"
       ],
+      "@providers/*": [
+        "src/providers/*"
+      ],
       "@icons/*": [
         "public/static/svg/*"
       ]
