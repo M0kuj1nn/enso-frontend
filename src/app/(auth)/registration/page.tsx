@@ -35,7 +35,7 @@ const Registration = () => {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     await register(data);
-    router.push('/hub');
+    router.push('/chat');
   };
 
   return (
