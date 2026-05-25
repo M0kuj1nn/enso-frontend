@@ -6,12 +6,13 @@ import { loginRequest, registerRequest } from '@api/auth';
 import type { LoginData, RegisterData } from '@api/auth';
 import { AuthContext } from '@contexts/AuthContext';
 import type { User } from '@shared/types/user';
+//remove when real API is ready
+import Cookies from 'js-cookie';
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    //проверка, что мы не на сервере, для него вернуть null.
     if (typeof window === 'undefined') return null;
-    const saved = localStorage.getItem('user');
+    const saved = Cookies.get('user');
     return saved ? JSON.parse(saved) : null;
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +24,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const userData = await loginRequest(data);
       setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      //remove when real API is ready
+      Cookies.set('user', JSON.stringify(userData));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Произошла ошибка');
       throw e;
@@ -38,7 +40,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     try {
       const userData = await registerRequest(data);
       setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      //remove when real API is ready
+      Cookies.set('user', JSON.stringify(userData));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Произошла ошибка');
       throw e;
@@ -50,7 +53,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const logout = () => {
     setUser(null);
     setError(null);
-    localStorage.removeItem('user');
+    //remove when real API is ready
+    Cookies.remove('user');
   };
 
   const clearError = useCallback(() => setError(null), []);

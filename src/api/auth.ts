@@ -26,6 +26,7 @@ const MOCK_USERS: MockUser[] = [
   },
 ];
 
+// Change these functions to real API when its ready godbless
 export const loginRequest = async (data: LoginData): Promise<User> => {
   await new Promise((r) => setTimeout(r, 1000));
   const user = MOCK_USERS.find(

@@ -1,6 +1,6 @@
 'use client';
 
-import { FC } from 'react';
+import { FC, memo } from 'react';
 
 import StarIcon from '@icons/star.svg';
 import { motion } from 'framer-motion';
@@ -27,7 +27,7 @@ interface BackgroundProps {
   className?: string;
 }
 
-const Background: FC<BackgroundProps> = ({ className }) => {
+const Background: FC<BackgroundProps> = memo(({ className }) => {
   return (
     <div
       className={`pointer-events-none fixed inset-0 z-0 overflow-hidden select-none ${className ?? ''}`}
@@ -92,6 +92,8 @@ const Background: FC<BackgroundProps> = ({ className }) => {
       ))}
     </div>
   );
-};
+});
+
+Background.displayName = 'Background';
 
 export default Background;

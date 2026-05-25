@@ -1,5 +1,3 @@
-import AnimatedBackground from 'src/app/(auth)/auth-components/AnimatedBackground';
-
 const Home = () => {
   return (
     <main className='relative min-h-screen overflow-hidden bg-black'>
