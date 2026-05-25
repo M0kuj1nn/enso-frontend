@@ -1,16 +1,13 @@
 // Базовые типы
-export type ChatType = 'dm' | 'group';
-export type UserStatus = 'online' | 'away' | 'offline';
-export type FriendState = 'none' | 'pending_out' | 'pending_in' | 'friends';
+import type { User, UserStatus } from '@shared/types/user';
 
-// Пользователь
-export interface User {
-  id: string;
-  username: string; // уникальный тег (@username)
-  name: string;
-  avatar: string;
-  status: UserStatus;
-}
+export type { User, UserStatus };
+//убрать export type { User, UserStatus }
+//поправить импорты в других местах где используется User и UserStatus в /chat
+
+export type ChatType = 'dm' | 'group';
+
+export type FriendState = 'none' | 'pending_out' | 'pending_in' | 'friends';
 
 export interface Friend extends User {
   friendState: FriendState;

@@ -2,9 +2,9 @@
 
 import { FC, ReactNode, useState } from 'react';
 
+import { useAuth } from '@contexts/AuthContext';
 import { ChatContext } from '@contexts/ChatContext';
 import {
-  CURRENT_USER,
   MOCK_CHATS,
   MOCK_FRIENDS,
   MOCK_MESSAGES,
@@ -13,6 +13,7 @@ import {
 import { Chat, Friend, Message, Participant, User } from '@shared/types/chat';
 
 export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
   const [chats, setChats] = useState<Chat[]>(MOCK_CHATS);
   const [messages, setMessages] =
@@ -22,8 +23,8 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const participants: Record<string, Participant[]> = chats.reduce(
     (acc, chat) => {
       const members = chat.participantIds.map<Participant>((id) => {
-        if (id === 'me') return CURRENT_USER;
-        return MOCK_SEARCHABLE_USERS.find((u) => u.id === id) ?? CURRENT_USER;
+        if (id === 'me') return user!;
+        return MOCK_SEARCHABLE_USERS.find((u) => u.id === id) ?? user!;
       });
       return { ...acc, [chat.id]: members };
     },
@@ -41,7 +42,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const newMsg: Message = {
       id: `local-${Date.now()}`,
       text,
-      sender_id: CURRENT_USER.id,
+      sender_id: user!.id,
       receiver_id: null,
       media_links: [],
       is_read: false,
@@ -49,8 +50,8 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
       reply_to: replyTo ?? null,
       created_at: now,
       updated_at: now,
-      sender: CURRENT_USER.name,
-      avatar: CURRENT_USER.avatar,
+      sender: user!.name,
+      avatar: user!.avatar,
       isOwn: true,
     };
     setMessages((prev) => ({
@@ -117,7 +118,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
       id: `group-${Date.now()}`,
       type: 'group',
       name,
-      avatar: firstMember?.avatar ?? CURRENT_USER.avatar,
+      avatar: firstMember?.avatar ?? user!.avatar,
       lastMessage: '',
       unread: 0,
       participantIds: ['me', ...memberIds],
@@ -130,7 +131,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <ChatContext.Provider
       value={{
-        currentUser: CURRENT_USER,
+        currentUser: user!,
         friends,
         chats,
         messages,

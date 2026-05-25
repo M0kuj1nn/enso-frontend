@@ -2,7 +2,8 @@
 
 import { createContext, useContext } from 'react';
 
-import type { LoginData, RegisterData, User } from '@api/auth';
+import type { LoginData, RegisterData } from '@api/auth';
+import type { User } from '@shared/types/user';
 
 interface AuthContextType {
   user: User | null;

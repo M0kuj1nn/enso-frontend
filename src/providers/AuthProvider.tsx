@@ -3,8 +3,9 @@
 import { FC, ReactNode, useCallback, useState } from 'react';
 
 import { loginRequest, registerRequest } from '@api/auth';
-import type { LoginData, RegisterData, User } from '@api/auth';
+import type { LoginData, RegisterData } from '@api/auth';
 import { AuthContext } from '@contexts/AuthContext';
+import type { User } from '@shared/types/user';
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
