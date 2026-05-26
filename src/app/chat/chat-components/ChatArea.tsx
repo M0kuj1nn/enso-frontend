@@ -12,11 +12,12 @@ import { ChatComposer } from './ChatComposer';
 import { ChatDetailsPanel } from './ChatDetailsPanel';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessage } from './ChatMessage';
+import { ChatSearch } from './ChatSearch';
 
 // ChatDetailsProvider
-
 const ChatDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <ChatDetailsContext.Provider
@@ -24,6 +25,9 @@ const ChatDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         isDetailsOpen,
         openDetails: () => setIsDetailsOpen(true),
         closeDetails: () => setIsDetailsOpen(false),
+        isSearchOpen,
+        openSearch: () => setIsSearchOpen(true),
+        closeSearch: () => setIsSearchOpen(false),
       }}
     >
       {children}
@@ -32,7 +36,6 @@ const ChatDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
 };
 
 // ChatArea
-
 interface ChatAreaProps {
   chatId: string;
 }
@@ -56,7 +59,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
     count: chatMessages.length,
     getScrollElement: () => scrollRef.current,
     estimateSize: () => 72,
-    overscan: 10, // сколько сообщений рендерить за пределами viewport
+    overscan: 10, // кол-во сообщений рендерить за пределами viewport
   });
 
   // Прокрутка вниз при новых сообщениях
@@ -150,6 +153,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
           <ChatComposer onSend={handleSend} />
         </Container>
 
+        <ChatSearch chatId={chatId} />
         <ChatDetailsPanel chat={chat} participants={chatParts} />
       </Container>
     </ChatDetailsProvider>
