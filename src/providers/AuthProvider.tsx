@@ -5,16 +5,21 @@ import { FC, ReactNode, useCallback, useState } from 'react';
 import { loginRequest, registerRequest } from '@api/auth';
 import type { LoginData, RegisterData } from '@api/auth';
 import { AuthContext } from '@contexts/AuthContext';
+import { useIsomorphicLayoutEffect } from '@shared/hooks/useIsomorphicLayoutEffect';
 import type { User } from '@shared/types/user';
 //remove when real API is ready
 import Cookies from 'js-cookie';
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    if (typeof window === 'undefined') return null;
+  const [user, setUser] = useState<User | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useIsomorphicLayoutEffect(() => {
     const saved = Cookies.get('user');
-    return saved ? JSON.parse(saved) : null;
-  });
+    if (saved) setUser(JSON.parse(saved));
+    setIsInitialized(true);
+  }, []);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,6 +69,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         user,
         isAuthenticated: !!user,
+        isInitialized,
         isLoading,
         error,
         clearError,

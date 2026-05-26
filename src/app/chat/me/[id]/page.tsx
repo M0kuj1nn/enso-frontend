@@ -1,4 +1,4 @@
-import { ChatArea } from '../chat-components/ChatArea';
+import { ChatArea } from '../../chat-components/ChatArea';
 
 interface ChatPageProps {
   params: Promise<{ id: string }>;
