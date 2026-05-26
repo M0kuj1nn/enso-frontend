@@ -68,7 +68,8 @@ export const MOCK_CHATS: Chat[] = [
     name: 'Design Team',
     avatar:
       'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop',
-    lastMessage: 'Обновлённые макеты в Figma',
+    lastMessage:
+      'Запланировала ревью дизайна на завтра в 14:00. Скоро пришлю приглашения.',
     lastMessageSenderName: 'Sarah',
     unread: 7,
     participantIds: ['me', 'u1', 'u2', 'u3'],
