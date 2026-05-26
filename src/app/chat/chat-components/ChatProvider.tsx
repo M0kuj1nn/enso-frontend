@@ -13,11 +13,14 @@ import {
 import { Chat, Friend, Message, Participant, User } from '@shared/types/chat';
 
 export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, isInitialized } = useAuth();
   const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
   const [chats, setChats] = useState<Chat[]>(MOCK_CHATS);
   const [messages, setMessages] =
     useState<Record<string, Message[]>>(MOCK_MESSAGES);
+
+  if (!isInitialized) return null;
+  if (!user) return null;
 
   // Участники каждого чата (join по participantIds)
   const participants: Record<string, Participant[]> = chats.reduce(

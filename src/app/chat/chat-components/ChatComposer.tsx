@@ -29,8 +29,11 @@ export const ChatComposer: FC<ChatComposerProps> = memo(({ onSend }) => {
   };
 
   return (
-    <Container className='shrink-0 border-t border-white/5 p-0 px-6 py-4'>
-      <Container className='w-full gap-2 rounded-full bg-[#25252c] p-0 px-4 py-2'>
+    <Container className='w-full p-0 px-6 py-4'>
+      <Container
+        variantsUi={{ style: 'whiteglass', rounded: 'full' }}
+        className='w-full gap-2 bg-[#25252c]/80 p-0 px-4 py-2'
+      >
         <Button
           variantsUi={{ color: 'ghost', rounded: 'lg' }}
           className='shrink-0 p-1.5'

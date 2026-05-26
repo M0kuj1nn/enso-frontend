@@ -8,6 +8,7 @@ import type { User } from '@shared/types/user';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   isLoading: boolean;
   error: string | null;
   clearError: () => void;

@@ -13,7 +13,7 @@ import { ChatDetailsPanel } from './ChatDetailsPanel';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessage } from './ChatMessage';
 
-// ─── ChatDetailsProvider ──────────────────────────────────────────────────────
+// ChatDetailsProvider
 
 const ChatDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -31,7 +31,7 @@ const ChatDetailsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-// ─── ChatArea ─────────────────────────────────────────────────────────────────
+// ChatArea
 
 interface ChatAreaProps {
   chatId: string;
@@ -52,12 +52,10 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
     [sendMessage, chatId],
   );
 
-  // ── Виртуализатор ──────────────────────────────────────────────────────────
-  // Вместо render всех сообщений — только видимые + overscan буфер
   const virtualizer = useVirtualizer({
     count: chatMessages.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => 72, // примерная высота одного сообщения в px
+    estimateSize: () => 72,
     overscan: 10, // сколько сообщений рендерить за пределами viewport
   });
 
@@ -86,11 +84,16 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
         variantsUi={{ flow: 'col' }}
         className='relative min-w-0 flex-1 gap-0 bg-[#141418] p-0'
       >
-        <ChatHeader chat={chat} participants={chatParts} />
+        <Container className='absolute top-0 right-0 left-0 z-10 p-0'>
+          <ChatHeader chat={chat} participants={chatParts} />
+        </Container>
 
         {/* Пустое состояние */}
         {chatMessages.length === 0 && (
-          <Container variantsUi={{ items: 'centered' }} className='flex-1 p-0'>
+          <Container
+            variantsUi={{ items: 'centered' }}
+            className='flex-1 p-0 pt-20 pb-20'
+          >
             <Text variantsUi={{ size: 'sm', color: 'muted' }}>
               Напишите первое сообщение!
             </Text>
@@ -101,7 +104,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
         {chatMessages.length > 0 && (
           <Container
             ref={scrollRef}
-            className='flex-1 overflow-y-auto p-0 pt-6'
+            className='flex-1 overflow-y-auto p-0 pt-20 pb-20'
           >
             <div
               style={{
@@ -143,7 +146,9 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
           </Container>
         )}
 
-        <ChatComposer onSend={handleSend} />
+        <Container className='absolute right-0 bottom-0 left-0 z-10 p-0'>
+          <ChatComposer onSend={handleSend} />
+        </Container>
 
         <ChatDetailsPanel chat={chat} participants={chatParts} />
       </Container>

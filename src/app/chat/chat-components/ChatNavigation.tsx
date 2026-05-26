@@ -395,14 +395,14 @@ export const ChatNavigation: FC = () => {
   const [isAddFriendOpen, setIsAddFriendOpen] = useState(false);
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
 
-  const activeChatId = pathname.startsWith('/chat/')
-    ? pathname.split('/')[2]
+  const activeChatId = pathname.startsWith('/chat/@me')
+    ? pathname.split('/')[3]
     : '';
 
-  const handleSelect = (id: string) => router.push(`/chat/${id}`);
+  const handleSelect = (id: string) => router.push(`/chat/@me/${id}`);
   const handleDmClick = () => {
     if (!isPanelOpen) setIsPanelOpen(true);
-    router.push('/chat');
+    router.push('/chat/@me');
   };
 
   return (
@@ -442,7 +442,7 @@ export const ChatNavigation: FC = () => {
       <NewChatModal
         isOpen={isNewChatOpen}
         onClose={() => setIsNewChatOpen(false)}
-        onCreated={(id) => router.push(`/chat/${id}`)}
+        onCreated={(id) => router.push(`/chat/@me/${id}`)}
       />
     </>
   );

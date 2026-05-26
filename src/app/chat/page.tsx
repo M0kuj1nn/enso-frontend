@@ -1,5 +1,5 @@
-import { EmptyChat } from './chat-components/EmptyChat';
+import { redirect } from 'next/navigation';
 
-export default function ChatIndexPage() {
-  return <EmptyChat />;
+export default function ChatPage() {
+  redirect('/chat/@me');
 }
