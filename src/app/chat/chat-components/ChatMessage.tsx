@@ -1,6 +1,5 @@
 import { FC, memo } from 'react';
 
-import { Conditional } from '@components/Conditionals';
 import { Message } from '@shared/types/chat';
 import { Avatar } from '@ui/Avatar';
 import { Container } from '@ui/Container';
@@ -13,30 +12,33 @@ interface ChatMessageProps {
 
 export const ChatMessage: FC<ChatMessageProps> = memo(
   ({ message, isFirstInGroup }) => {
+    // Своё сообщение
     if (message.isOwn) {
       return (
-        <Container className='justify-end p-0 px-6 py-0.5'>
+        <Container className='items-start justify-end gap-[13] p-0 px-6 py-0.5'>
+          {/* Пузырь */}
           <Container
             variantsUi={{ flow: 'col' }}
-            className='max-w-[65%] rounded-2xl bg-[#A74BE9] p-0 px-4 py-3'
-            style={{ borderBottomRightRadius: 6 }}
+            className='max-w-[70%] gap-0 bg-[#7B1CFF] p-0 px-4 py-3'
+            style={{ borderRadius: '21px 8px 21px 21px' }}
           >
-            <Conditional condition={isFirstInGroup}>
-              <Container className='mb-1.5 justify-end gap-2 p-0'>
+            {/* Ник + время — только у первого в группе */}
+            {isFirstInGroup && (
+              <Container className='mb-2 justify-between gap-3 p-0'>
                 <Text
-                  variantsUi={{ size: 'xs', weight: 'medium' }}
-                  className='text-purple-200'
+                  variantsUi={{ weight: 'bold' }}
+                  className='flex-1 truncate text-[16px] leading-none text-white'
                 >
                   {message.sender}
                 </Text>
-                <Avatar
-                  src={message.avatar}
-                  alt={message.sender}
-                  size='xs'
-                  shape='circle'
-                />
+                {/* TODO: role icons */}
+                <Text className='shrink-0 text-sm leading-none text-purple-200/70'>
+                  {message.created_at}
+                </Text>
               </Container>
-            </Conditional>
+            )}
+
+            {/* Текст */}
             <Text
               as='p'
               variantsUi={{ size: 'sm' }}
@@ -44,40 +46,66 @@ export const ChatMessage: FC<ChatMessageProps> = memo(
             >
               {message.text}
             </Text>
-            <Text
-              variantsUi={{ size: 'xs' }}
-              className='mt-1 block text-right text-purple-200/70'
-            >
-              {message.created_at}
-            </Text>
+
+            {/* Время для не-первых в группе */}
+            {!isFirstInGroup && (
+              <Text className='mt-1 block text-right text-sm leading-none text-purple-200/70'>
+                {message.created_at}
+              </Text>
+            )}
           </Container>
+
+          {/* Аватар снаружи — выровнен по верхнему краю пузыря */}
+          {isFirstInGroup ? (
+            <Avatar
+              src={message.avatar}
+              alt={message.sender}
+              size='lg'
+              shape='circle'
+            />
+          ) : (
+            <Container className='w-10 shrink-0 p-0' />
+          )}
         </Container>
       );
     }
 
+    // Чужое сообщение
     return (
-      <Container className='p-0 px-6 py-0.5'>
+      <Container className='items-start gap-[13] p-0 px-6 py-0.5'>
+        {/* Аватар снаружи слева — выровнен по верхнему краю */}
+        {isFirstInGroup ? (
+          <Avatar
+            src={message.avatar}
+            alt={message.sender}
+            size='lg'
+            shape='circle'
+          />
+        ) : (
+          <Container className='w-10 shrink-0 p-0' />
+        )}
+
+        {/* Пузырь */}
         <Container
           variantsUi={{ flow: 'col' }}
-          className='max-w-[65%] rounded-2xl bg-[#25252c] p-0 px-4 py-3'
-          style={{ borderBottomLeftRadius: 6 }}
+          className='max-w-[70%] gap-0 bg-[#25252c] p-0 px-4 py-3'
+          style={{ borderRadius: '8px 21px 21px 21px' }}
         >
-          <Conditional condition={isFirstInGroup}>
-            <Container className='mb-1.5 gap-2 p-0'>
-              <Avatar
-                src={message.avatar}
-                alt={message.sender}
-                size='xs'
-                shape='circle'
-              />
+          {isFirstInGroup && (
+            <Container className='mb-2 justify-between gap-3 p-0'>
               <Text
-                variantsUi={{ size: 'xs', weight: 'medium' }}
-                className='text-white/80'
+                variantsUi={{ weight: 'bold' }}
+                className='flex-1 truncate text-[16px] leading-none text-white/90'
               >
                 {message.sender}
               </Text>
+              {/* TODO: role icons */}
+              <Text className='shrink-0 text-sm leading-none text-gray-500'>
+                {message.created_at}
+              </Text>
             </Container>
-          </Conditional>
+          )}
+
           <Text
             as='p'
             variantsUi={{ size: 'sm', color: 'muted' }}
@@ -85,12 +113,12 @@ export const ChatMessage: FC<ChatMessageProps> = memo(
           >
             {message.text}
           </Text>
-          <Text
-            variantsUi={{ size: 'xs', color: 'muted' }}
-            className='mt-1 block'
-          >
-            {message.created_at}
-          </Text>
+
+          {!isFirstInGroup && (
+            <Text className='mt-1 block text-sm leading-none text-gray-500'>
+              {message.created_at}
+            </Text>
+          )}
         </Container>
       </Container>
     );
