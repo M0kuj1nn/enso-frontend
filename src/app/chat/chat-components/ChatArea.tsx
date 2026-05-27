@@ -38,12 +38,13 @@ interface ChatAreaProps {
 }
 
 export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
-  const { chats, messages, participants, sendMessage } = useChatContext();
+  const { messages, participants, sendMessage, getChatData, servers } =
+    useChatContext();
 
   // ref на scroll-контейнер — нужен virtualizer'у для измерений
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const chat = chats.find((c) => c.id === chatId);
+  const chatData = getChatData(chatId);
   const chatMessages = messages[chatId] ?? [];
   const chatParts = participants[chatId] ?? [];
 
@@ -66,7 +67,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
     }
   }, [chatMessages.length]);
 
-  if (!chat) {
+  if (!chatData) {
     return (
       <Container
         variantsUi={{ items: 'centered' }}
@@ -85,7 +86,13 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
         className='relative min-w-0 flex-1 gap-0 bg-[#141418] p-0'
       >
         <Container className='absolute top-0 right-0 left-0 z-10 p-0'>
-          <ChatHeader chat={chat} participants={chatParts} />
+          <ChatHeader
+            chat={chatData!}
+            participants={chatParts}
+            isVoiceChannel={servers.some((s) =>
+              s.voice_channels.some((vc) => vc.id === chatId),
+            )}
+          />
         </Container>
 
         {/* Пустое состояние */}
@@ -150,7 +157,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
           <ChatComposer onSend={handleSend} />
         </Container>
 
-        <ChatDetailsPanel chat={chat} participants={chatParts} />
+        <ChatDetailsPanel chat={chatData!} participants={chatParts} />
       </Container>
     </ChatDetailsProvider>
   );

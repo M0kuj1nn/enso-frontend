@@ -15,6 +15,10 @@ export const Button = ve(
           danger: 'bg-red-600 text-white hover:bg-red-700',
           glamor:
             'bg-linear-to-r from-[#DC52FF] to-[#8B10E3] text-white hover:from-[#E066FF] hover:to-[#9C1AF5]',
+          userPanelDefault: 'bg-[#232325] text-[#AEAEB8] hover:bg-[#46464F]',
+          userPanelDanger: 'bg-red-500/25 text-red-400 hover:bg-red-500/35',
+          userPanelActive:
+            'bg-[#A74BE9]/25 text-[#C97EFF] hover:bg-[#A74BE9]/35',
         },
         size: {
           sm: 'px-3 py-1.5 text-xs',

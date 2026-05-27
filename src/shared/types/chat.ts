@@ -57,13 +57,15 @@ export interface Chat {
 // Серверная часть (будет нужна для вкладки серверов)
 export interface TextChannel {
   id: string;
+  serverId: string;
   name: string;
-  messages: Message[];
 }
 
 export interface Server {
   id: string;
   name: string;
+  topic: string;
+  icon: string;
   text_channels: TextChannel[];
   voice_channels: VoiceChannel[];
   members: string[]; // user ids
@@ -71,9 +73,16 @@ export interface Server {
   invite_links: string[];
 }
 
+export interface VoiceParticipant {
+  userId: string;
+  isSpeaking: boolean;
+}
+
 export interface VoiceChannel {
   id: string;
+  serverId: string;
   name: string;
+  participants: VoiceParticipant[];
 }
 
 export interface Role {

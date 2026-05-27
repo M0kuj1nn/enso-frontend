@@ -18,7 +18,6 @@ interface ChatHeaderProps {
 export const ChatHeader: FC<ChatHeaderProps> = memo(
   ({ chat, participants }) => {
     const { openDetails } = useChatDetailsContext();
-
     return (
       <Container className='w-full shrink-0 p-0 px-6 py-3'>
         <Container
