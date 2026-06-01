@@ -8,6 +8,10 @@ export interface ChatDetailsContextValue {
   isDetailsOpen: boolean;
   openDetails: () => void;
   closeDetails: () => void;
+
+  isSearchOpen: boolean;
+  openSearch: () => void;
+  closeSearch: () => void;
 }
 
 export const ChatDetailsContext = createContext<
