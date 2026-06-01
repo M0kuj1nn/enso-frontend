@@ -2,19 +2,21 @@
 import type { User, UserStatus } from '@shared/types/user';
 
 export type { User, UserStatus };
-//убрать export type { User, UserStatus }
+//#TODO:убрать export type { User, UserStatus }
 //поправить импорты в других местах где используется User и UserStatus в /chat
 
 export type ChatType = 'dm' | 'group';
 
+//#TODO: меняем
 export type FriendState = 'none' | 'pending_out' | 'pending_in' | 'friends';
-
+//#TODO: меняем
 export interface Friend extends User {
   friendState: FriendState;
 }
 
 export interface Participant extends User {}
 
+//#TODO: меняем
 // Реакция на сообщение
 export interface Reaction {
   emoji: string;
@@ -22,7 +24,7 @@ export interface Reaction {
   user_ids: string[];
 }
 
-// Сообщение
+//#TODO: меняем
 export interface Message {
   // Поля от бэка
   id: string;
@@ -57,13 +59,16 @@ export interface Chat {
 // Серверная часть (будет нужна для вкладки серверов)
 export interface TextChannel {
   id: string;
+  serverId: string;
   name: string;
-  messages: Message[];
 }
 
+//#TODO: меняем
 export interface Server {
   id: string;
   name: string;
+  topic: string;
+  icon: string;
   text_channels: TextChannel[];
   voice_channels: VoiceChannel[];
   members: string[]; // user ids
@@ -71,11 +76,19 @@ export interface Server {
   invite_links: string[];
 }
 
-export interface VoiceChannel {
-  id: string;
-  name: string;
+export interface VoiceParticipant {
+  userId: string;
+  isSpeaking: boolean;
 }
 
+export interface VoiceChannel {
+  id: string;
+  serverId: string;
+  name: string;
+  participants: VoiceParticipant[];
+}
+
+//#TODO: мб убрать
 export interface Role {
   user_id: string;
   permissions_bitmap: number; // битовая маска прав

@@ -2,7 +2,14 @@
 
 import { createContext } from 'react';
 
-import { Chat, Friend, Message, Participant, User } from '@shared/types/chat';
+import {
+  Chat,
+  Friend,
+  Message,
+  Participant,
+  Server,
+  User,
+} from '@shared/types/chat';
 import { useContextWrapper } from '@shared/utils';
 
 export interface ChatContextValue {
@@ -10,8 +17,12 @@ export interface ChatContextValue {
   currentUser: User;
   friends: Friend[];
   chats: Chat[];
+  servers: Server[];
   messages: Record<string, Message[]>;
   participants: Record<string, Participant[]>;
+  activeVoiceChannelId: string | null;
+  activeScreenStream: MediaStream | null;
+  activeCameraStream: MediaStream | null;
 
   // Операции (WS-ready интерфейс)
   // WS: каждую функцию заменить на ws.send() + оптимистичный апдейт стейта
@@ -25,6 +36,28 @@ export interface ChatContextValue {
   createDm: (friendId: string) => Chat;
 
   createGroup: (name: string, memberIds: string[]) => Chat;
+
+  createServer: (name: string, topic: string, icon: string) => Server;
+
+  addTextChannel: (serverId: string, name: string) => void;
+
+  addVoiceChannel: (serverId: string, name: string) => void;
+
+  getChatData: (id: string) => Chat | null;
+
+  joinVoiceChannel: (channelId: string) => void;
+
+  leaveVoiceChannel: () => void;
+
+  startScreenShare: () => Promise<void>;
+
+  stopScreenShare: () => void;
+
+  startCamera: () => Promise<void>;
+
+  stopCamera: () => void;
+
+  setMySpeaking: (isSpeaking: boolean) => void;
 
   // WS: эти методы добавятя когда бэк будет готов к слиянию
   // addReaction:    (messageId: string, emoji: string) => void

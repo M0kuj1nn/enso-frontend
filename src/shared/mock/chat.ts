@@ -1,6 +1,6 @@
 // WS: этот файл целиком заменится на реальные запросы к API
 // Структура типов сохраняется — компоненты переписывать не придётся
-import { Chat, Friend, Message, User } from '@shared/types/chat';
+import { Chat, Friend, Message, Server, User } from '@shared/types/chat';
 
 export const CURRENT_USER: User = {
   id: 'me',
@@ -217,4 +217,235 @@ export const MOCK_MESSAGES: Record<string, Message[]> = {
     ),
   ],
   '4': [],
+  tc1: [
+    msg(
+      'tc1m1',
+      'tc1',
+      'u1',
+      'Sarah Chen',
+      MOCK_SEARCHABLE_USERS[0].avatar,
+      'Всем привет! Добро пожаловать в Design Hub 🎨',
+      '10:00',
+    ),
+    msg(
+      'tc1m2',
+      'tc1',
+      'u2',
+      'Marcus Johnson',
+      MOCK_SEARCHABLE_USERS[1].avatar,
+      'Рад быть здесь! Уже смотрю последние макеты.',
+      '10:05',
+    ),
+    msg(
+      'tc1m3',
+      'tc1',
+      'me',
+      'You',
+      CURRENT_USER.avatar,
+      'Отличный канал! Давайте обсудим новый дизайн системы.',
+      '10:10',
+      true,
+    ),
+    msg(
+      'tc1m4',
+      'tc1',
+      'u3',
+      'Emily Rodriguez',
+      MOCK_SEARCHABLE_USERS[2].avatar,
+      'Я подготовила несколько вариантов цветовой палитры, скоро поделюсь.',
+      '10:15',
+    ),
+  ],
+  tc2: [
+    msg(
+      'tc2m1',
+      'tc2',
+      'u1',
+      'Sarah Chen',
+      MOCK_SEARCHABLE_USERS[0].avatar,
+      'Выложила макеты для ревью. Жду комментарии!',
+      '11:00',
+    ),
+    msg(
+      'tc2m2',
+      'tc2',
+      'me',
+      'You',
+      CURRENT_USER.avatar,
+      'Отступы на мобайле нужно поправить, остальное отлично.',
+      '11:20',
+      true,
+    ),
+    msg(
+      'tc2m3',
+      'tc2',
+      'u1',
+      'Sarah Chen',
+      MOCK_SEARCHABLE_USERS[0].avatar,
+      'Принято, исправлю сегодня вечером.',
+      '11:25',
+    ),
+  ],
+  tc3: [
+    msg(
+      'tc3m1',
+      'tc3',
+      'u2',
+      'Marcus Johnson',
+      MOCK_SEARCHABLE_USERS[1].avatar,
+      'Полезные ресурсы по типографике: https://typescale.com',
+      '9:00',
+    ),
+    msg(
+      'tc3m2',
+      'tc3',
+      'u3',
+      'Emily Rodriguez',
+      MOCK_SEARCHABLE_USERS[2].avatar,
+      'Добавляю сюда коллекцию иконок которыми пользуемся.',
+      '9:30',
+    ),
+  ],
+
+  // Каналы сервера s2 — Dev Team
+  tc4: [
+    msg(
+      'tc4m1',
+      'tc4',
+      'u2',
+      'Marcus Johnson',
+      MOCK_SEARCHABLE_USERS[1].avatar,
+      'Привет всем! Новый спринт начинается в понедельник.',
+      '9:00',
+    ),
+    msg(
+      'tc4m2',
+      'tc4',
+      'u4',
+      'Alex Kim',
+      MOCK_SEARCHABLE_USERS[3].avatar,
+      'Задачи уже в Jira, можно начинать.',
+      '9:15',
+    ),
+    msg(
+      'tc4m3',
+      'tc4',
+      'me',
+      'You',
+      CURRENT_USER.avatar,
+      'Взял задачу по рефакторингу авторизации.',
+      '9:20',
+      true,
+    ),
+  ],
+  tc5: [
+    msg(
+      'tc5m1',
+      'tc5',
+      'u2',
+      'Marcus Johnson',
+      MOCK_SEARCHABLE_USERS[1].avatar,
+      'Поднял новый эндпоинт для авторизации, можете тестить.',
+      '14:00',
+    ),
+    msg(
+      'tc5m2',
+      'tc5',
+      'u5',
+      'Daniel Park',
+      MOCK_SEARCHABLE_USERS[4].avatar,
+      'Протестил — всё работает. Документацию добавил в Swagger.',
+      '14:30',
+    ),
+  ],
+  tc6: [
+    msg(
+      'tc6m1',
+      'tc6',
+      'me',
+      'You',
+      CURRENT_USER.avatar,
+      'Переехали на App Router, старые страницы удалены.',
+      '13:00',
+      true,
+    ),
+    msg(
+      'tc6m2',
+      'tc6',
+      'u4',
+      'Alex Kim',
+      MOCK_SEARCHABLE_USERS[3].avatar,
+      'Хорошо, обновил зависимости под новую версию Next.js.',
+      '13:20',
+    ),
+    msg(
+      'tc6m3',
+      'tc6',
+      'u5',
+      'Daniel Park',
+      MOCK_SEARCHABLE_USERS[4].avatar,
+      'Middleware тоже обновил, не забудьте запустить npm install.',
+      '13:35',
+    ),
+  ],
 };
+
+export const MOCK_SERVERS: Server[] = [
+  {
+    id: 's1',
+    name: 'Design Hub',
+    topic: 'Всё про дизайн и UI/UX',
+    icon: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop',
+    text_channels: [
+      { id: 'tc1', serverId: 's1', name: 'общий' },
+      { id: 'tc2', serverId: 's1', name: 'дизайн-ревью' },
+      { id: 'tc3', serverId: 's1', name: 'ресурсы' },
+    ],
+    voice_channels: [
+      {
+        id: 'vc1',
+        serverId: 's1',
+        name: 'Войсчат',
+        participants: [
+          { userId: 'u1', isSpeaking: true },
+          { userId: 'u2', isSpeaking: false },
+          { userId: 'u3', isSpeaking: false },
+        ],
+      },
+      {
+        id: 'vc2',
+        serverId: 's1',
+        name: 'Стендап',
+        participants: [{ userId: 'u2', isSpeaking: false }],
+      },
+    ],
+    members: ['me', 'u1', 'u2', 'u3'],
+    owner: 'me',
+    invite_links: [],
+  },
+  {
+    id: 's2',
+    name: 'Dev Team',
+    topic: 'Разработка и код',
+    icon: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=100&h=100&fit=crop',
+    text_channels: [
+      { id: 'tc4', serverId: 's2', name: 'общий' },
+      { id: 'tc5', serverId: 's2', name: 'бэкенд' },
+      { id: 'tc6', serverId: 's2', name: 'фронтенд' },
+    ],
+    voice_channels: [
+      {
+        id: 'vc3',
+        serverId: 's2',
+        name: 'Войсчат',
+        participants: [
+          { userId: 'u4', isSpeaking: false },
+          { userId: 'u5', isSpeaking: true },
+        ],
+      },
+    ],
+    members: ['me', 'u2', 'u4', 'u5'],
+    owner: 'u2',
+    invite_links: [],
+  },
+];

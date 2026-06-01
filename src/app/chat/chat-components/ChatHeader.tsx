@@ -15,9 +15,12 @@ import {
   BellOff,
   LogOut,
   MoreVertical,
+  Phone,
   Search,
   Users2,
 } from 'lucide-react';
+
+import { CallModal } from './CallModal';
 
 // ChatMenu ("Подробнее")
 
@@ -85,6 +88,7 @@ export const ChatHeader: FC<ChatHeaderProps> = memo(
   ({ chat, participants }) => {
     const { openDetails, openSearch } = useChatDetailsContext();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isCallOpen, setIsCallOpen] = useState(false);
 
     // ref на враппер кнопки "Подробнее" + выпадающее меню
     const menuWrapperRef = useRef<HTMLDivElement>(null);
@@ -118,6 +122,21 @@ export const ChatHeader: FC<ChatHeaderProps> = memo(
           </Container>
 
           <Container className='gap-1 p-0'>
+            {/* звонок */}
+            {chat.type === 'dm' && (
+              <Button
+                variantsUi={{ color: 'ghost', rounded: 'lg' }}
+                className='p-2'
+                title='Видеозвонок'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsCallOpen(true);
+                }}
+              >
+                <Phone className='h-5 w-5' />
+              </Button>
+            )}
+
             {/* Поиск */}
             <Button
               variantsUi={{ color: 'ghost', rounded: 'lg' }}
@@ -155,6 +174,9 @@ export const ChatHeader: FC<ChatHeaderProps> = memo(
             </Container>
           </Container>
         </Container>
+        {isCallOpen && (
+          <CallModal chat={chat} onClose={() => setIsCallOpen(false)} />
+        )}
       </Container>
     );
   },
