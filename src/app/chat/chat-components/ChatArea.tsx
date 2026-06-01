@@ -41,13 +41,31 @@ interface ChatAreaProps {
 }
 
 export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
-  const { messages, participants, sendMessage, getChatData, servers } =
+  const { chats, messages, participants, sendMessage, servers } =
     useChatContext();
 
   // ref на scroll-контейнер — нужен virtualizer'у для измерений
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const chatData = getChatData(chatId);
+  const chat = chats.find((c) => c.id === chatId);
+
+  const serverChannel = !chat
+    ? servers.flatMap((s) => s.text_channels).find((tc) => tc.id === chatId)
+    : null;
+
+  const effectiveChat =
+    chat ??
+    (serverChannel
+      ? {
+          id: serverChannel.id,
+          name: serverChannel.name,
+          avatar:
+            servers.find((s) => s.text_channels.some((tc) => tc.id === chatId))
+              ?.icon ?? '',
+          type: 'group' as const,
+        }
+      : null);
+
   const chatMessages = messages[chatId] ?? [];
   const chatParts = participants[chatId] ?? [];
 
@@ -56,6 +74,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
     [sendMessage, chatId],
   );
 
+  //#TODO: спиздить компонент с taskmaster
   const virtualizer = useVirtualizer({
     count: chatMessages.length,
     getScrollElement: () => scrollRef.current,
@@ -70,7 +89,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
     }
   }, [chatMessages.length]);
 
-  if (!chatData) {
+  if (!effectiveChat) {
     return (
       <Container
         variantsUi={{ items: 'centered' }}
@@ -89,13 +108,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
         className='relative min-w-0 flex-1 gap-0 bg-[#141418] p-0'
       >
         <Container className='absolute top-0 right-0 left-0 z-10 p-0'>
-          <ChatHeader
-            chat={chatData!}
-            participants={chatParts}
-            isVoiceChannel={servers.some((s) =>
-              s.voice_channels.some((vc) => vc.id === chatId),
-            )}
-          />
+          <ChatHeader chat={effectiveChat} participants={chatParts} />
         </Container>
 
         {/* Пустое состояние */}
@@ -161,7 +174,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
         </Container>
 
         <ChatSearch chatId={chatId} />
-        <ChatDetailsPanel chat={chat} participants={chatParts} />
+        <ChatDetailsPanel chat={effectiveChat} participants={chatParts} />
       </Container>
     </ChatDetailsProvider>
   );

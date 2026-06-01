@@ -6,6 +6,7 @@ const nextConfig = {
       { source: '/chat/@me/:id', destination: '/chat/me/:id' },
     ];
   },
+  devIndicators: false, 
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,

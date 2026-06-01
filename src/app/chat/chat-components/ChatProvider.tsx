@@ -185,14 +185,14 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setChats((prev) =>
       prev.map((c) =>
         c.id === chatId
-          ? { ...c, lastMessage: text, LastMessageSenderName: 'Вы', unread: 0 }
+          ? { ...c, lastMessage: text, lastMessageSenderName: 'Вы', unread: 0 }
           : c,
       ),
     );
   };
 
   // searchUsers
-  // WS: заменить на GET /api/users/search?q=query
+  // заменить на GET /api/users/search?q=query
   const searchUsers = (query: string): User[] => {
     if (!query.trim()) return [];
     const q = query.toLowerCase();
@@ -204,7 +204,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   // addFriend
-  // WS: заменить на POST /api/friends/request  (+ WS event FRIEND_REQUEST_SENT)
+  // заменить на POST /api/friends/request
   const addFriend = (userId: string) => {
     const user = MOCK_SEARCHABLE_USERS.find((u) => u.id === userId);
     if (!user || friends.some((f) => f.id === userId)) return;
@@ -212,7 +212,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   // createDm
-  // WS: заменить на POST /api/chats/dm  (+ WS event CHAT_CREATED)
+  // заменить на POST /api/chats/dm  (+ WS event CHAT_CREATED)
   const createDm = (friendId: string): Chat => {
     const existing = chats.find(
       (c) => c.type === 'dm' && c.participantIds.includes(friendId),
@@ -235,7 +235,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   // ─── createGroup ─────────────────────────────────────────────────────────
-  // WS: заменить на POST /api/chats/group  (+ WS event CHAT_CREATED)
+  // заменить на POST /api/chats/group  (+ WS event CHAT_CREATED)
   const createGroup = (name: string, memberIds: string[]): Chat => {
     const firstMember = friends.find((f) => f.id === memberIds[0]);
     const newChat: Chat = {
