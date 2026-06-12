@@ -4,8 +4,8 @@ import { createContext } from 'react';
 
 import {
   Chat,
+  ChatMessage,
   Friend,
-  Message,
   Participant,
   Server,
   User,
@@ -18,7 +18,7 @@ export interface ChatContextValue {
   friends: Friend[];
   chats: Chat[];
   servers: Server[];
-  messages: Record<string, Message[]>;
+  messages: Record<string, ChatMessage[]>;
   participants: Record<string, Participant[]>;
   activeVoiceChannelId: string | null;
   activeScreenStream: MediaStream | null;

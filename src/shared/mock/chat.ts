@@ -1,6 +1,12 @@
 // WS: этот файл целиком заменится на реальные запросы к API
 // Структура типов сохраняется — компоненты переписывать не придётся
-import { Chat, Friend, Message, Server, User } from '@shared/types/chat';
+import {
+  Chat,
+  ChatMessage,
+  Relationship,
+  Server,
+  User,
+} from '@shared/types/chat';
 
 export const CURRENT_USER: User = {
   id: 'me',
@@ -55,10 +61,30 @@ export const MOCK_SEARCHABLE_USERS: User[] = [
   },
 ];
 
-export const MOCK_FRIENDS: Friend[] = [
-  { ...MOCK_SEARCHABLE_USERS[0], friendState: 'friends' },
-  { ...MOCK_SEARCHABLE_USERS[1], friendState: 'friends' },
-  { ...MOCK_SEARCHABLE_USERS[2], friendState: 'friends' },
+// Связи текущего пользователя с другими (дружба/заявки/блокировки).
+// friends в ChatProvider вычисляется из этого списка + профилей пользователей.
+export const MOCK_RELATIONSHIPS: Relationship[] = [
+  {
+    sender_id: 'me',
+    receiver_id: MOCK_SEARCHABLE_USERS[0].id,
+    status: 'accepted',
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    sender_id: 'me',
+    receiver_id: MOCK_SEARCHABLE_USERS[1].id,
+    status: 'accepted',
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    sender_id: 'me',
+    receiver_id: MOCK_SEARCHABLE_USERS[2].id,
+    status: 'accepted',
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  },
 ];
 
 export const MOCK_CHATS: Chat[] = [
@@ -112,22 +138,23 @@ export const MOCK_CHATS: Chat[] = [
 // Хелпер для создания мок-сообщения
 const msg = (
   id: string,
-  chatId: string,
+  targetId: string,
   sender_id: string,
   sender: string,
   avatar: string,
   text: string,
   created_at: string,
   isOwn = false,
-): Message => ({
+): ChatMessage => ({
   id,
-  text,
+  target_id: targetId,
+  bucket: '2026-06', // TODO: подставить реальный год-месяц при подключении бэка
   sender_id,
-  receiver_id: null,
-  media_links: [],
-  is_read: true,
+  reply_to_id: null,
+  text,
+  is_pinned: false,
+  media: [],
   reactions: [],
-  reply_to: null,
   created_at,
   updated_at: created_at,
   sender,
@@ -135,7 +162,7 @@ const msg = (
   isOwn,
 });
 
-export const MOCK_MESSAGES: Record<string, Message[]> = {
+export const MOCK_MESSAGES: Record<string, ChatMessage[]> = {
   '1': [
     msg(
       'm1',

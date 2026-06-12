@@ -7,51 +7,120 @@ export type { User, UserStatus };
 
 export type ChatType = 'dm' | 'group';
 
-//#TODO: меняем
-export type FriendState = 'none' | 'pending_out' | 'pending_in' | 'friends';
-//#TODO: меняем
+// Файл — общая схема вложений/аватаров/баннеров с бэка.
+// Назван FileAsset, а не File, т.к. File - встроенный тип браузера (input type="file")
+export interface FileAsset {
+  url: string;
+  name: string;
+  sizeb: number;
+  type: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Связь между пользователями: заявка в друзья / дружба / блокировка
+export interface Relationship {
+  sender_id: string;
+  receiver_id: string;
+  status: 'pending' | 'blocked' | 'accepted';
+  created_at: string;
+  updated_at: string;
+}
+
+// UI-статус дружбы относительно текущего пользователя.
+// Вычисляется на фронте из Relationship + currentUser.id, бэк это поле не отдаёт.
+export type FriendState =
+  | 'none'
+  | 'pending_out'
+  | 'pending_in'
+  | 'friends'
+  | 'blocked';
+
 export interface Friend extends User {
   friendState: FriendState;
 }
 
 export interface Participant extends User {}
 
-//#TODO: меняем
-// Реакция на сообщение
+// Историческое событие реакции (лог изменений, приходит по WS)
+export interface ReactionEvent {
+  id: string;
+  message_id: string;
+  sequence_number: string;
+  event_type: string;
+  user_id: string;
+  emoji: string;
+  created_at: string;
+}
+
+// Текущее агрегированное состояние реакции - то, что показывается под сообщением
 export interface Reaction {
+  id: string;
+  message_id: string;
   emoji: string;
   count: number;
-  user_ids: string[];
+  last_sequence_number: string;
 }
 
-//#TODO: меняем
+// Сообщение — форма, в которой оно приходит с бэка
 export interface Message {
-  // Поля от бэка
   id: string;
-  text: string;
+  target_id: string; // id канала или группы, в которую отправлено сообщение
+  bucket: string; // дата-бакет для постраничной подгрузки (например, "2026-06")
   sender_id: string;
-  receiver_id: string | null; // null для групповых чатов
-  media_links: string[]; // вложения
-  is_read: boolean;
-  reactions: Reaction[];
-  reply_to: string | null; // id сообщения на которое отвечаем
-  created_at: string; // ISO дата или HH:mm для мока
+  reply_to_id: string | null;
+  text: string;
+  is_pinned: boolean;
+  media: FileAsset[];
+  created_at: string;
   updated_at: string;
-
-  // WS: эти поля заполнять из usersCache по sender_id
-  sender: string; // display name
-  avatar: string; // url аватара
-  isOwn?: boolean; // вычисляется на фронте: sender_id === currentUser.id
 }
 
-// Чат
+// Сообщение для отображения в чате: Message + поля, "обогащённые" из usersCache
+export interface ChatMessage extends Message {
+  // WS: эти поля заполнять из usersCache по sender_id
+  sender: string; // display name отправителя
+  avatar: string; // url аватара отправителя
+  isOwn?: boolean; // вычисляется на фронте: sender_id === currentUser.id
+  reactions?: Reaction[];
+}
+
+// Группа — то, что приходит с бэка.
+// И личные переписки (DM), и групповые чаты на бэке - это Group.
+export interface Group {
+  id: string;
+  name: string;
+  picture: FileAsset;
+  banner: FileAsset;
+  owner_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Участник группы - персональные данные о прочтении для текущего пользователя
+export interface GroupMember {
+  group_id: string;
+  user_id: string;
+  last_read_message_id: string;
+  last_read_at: string;
+  unread_count: number;
+}
+
+// Чат - элемент списка чатов слева (UI-вид).
+// Собирается из Group + GroupMember (unread) + последнего сообщения.
+//
+// type вычисляется на фронте по числу участников:
+//   1-2 участника -> 'dm'    (личные сообщения)
+//   3+ участника  -> 'group' (групповой чат)
+// От этого зависит, например, какие пункты показывать в меню ChatHeader
+// ("Выйти из группы" - только для group).
 export interface Chat {
   id: string;
   type: ChatType;
   name: string;
   avatar: string;
   lastMessage: string;
-  lastMessageSenderName?: string; // <- добавить. "Вы" / "Кто-то" / undefined
+  lastMessageSenderName?: string; // "Вы" / "Кто-то" / undefined
   unread: number;
   participantIds: string[];
 }
@@ -95,14 +164,23 @@ export interface Role {
   color: string;
 }
 
+// Памятка для серверной части (новые схемы с бэка, когда дойдёт очередь):
+//
+// Server:
+//   id: uuid, name: str, theme: str, picture: File, banner: File,
+//   owner_id: uuid, created_at: date, updated_at: date
+//
+// Channel:
+//   id: uuid, name: str, server_id: uuid, namespace_name: str, type: 'text' | 'voice'
+
 // WS-события
 // WS: ws.on('message', (event: WsChatEvent) => dispatch(event))
-
+// TODO: формат WS-событий не сверен с протоколом - пересмотрим отдельно
 export type WsChatEvent =
-  | { type: 'MESSAGE_CREATED'; payload: Message }
+  | { type: 'MESSAGE_CREATED'; payload: ChatMessage }
   | {
       type: 'MESSAGE_UPDATED';
-      payload: Pick<Message, 'id' | 'text' | 'updated_at'>;
+      payload: Pick<ChatMessage, 'id' | 'text' | 'updated_at'>;
     }
   | { type: 'MESSAGE_DELETED'; payload: { id: string } }
   | {

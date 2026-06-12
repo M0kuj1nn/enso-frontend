@@ -1,9 +1,18 @@
 'use client';
 
-import { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  FC,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { useChatContext } from '@contexts/ChatContext';
 import { ChatDetailsContext } from '@contexts/ChatDetailsContext';
+import { Chat, ChatMessage as ChatMessageType } from '@shared/types/chat';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Container } from '@ui/Container';
 import { Text } from '@ui/typography/Text';
@@ -64,15 +73,40 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
               ?.icon ?? '',
           type: 'group' as const,
         }
-      : null);
+      : // } as Chat
+        null);
 
-  const chatMessages = messages[chatId] ?? [];
+  const chatMessages = useMemo(
+    () => messages[chatId] ?? [],
+    [messages, chatId],
+  );
   const chatParts = participants[chatId] ?? [];
 
-  const handleSend = useCallback(
-    (text: string) => sendMessage(chatId, text),
-    [sendMessage, chatId],
+  const [replyingTo, setReplyingTo] = useState<ChatMessageType | null>(null);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+  // Карта id -> сообщение, для резолва превью ответа (reply_to_id)
+  const messagesById = useMemo(
+    () => new Map(chatMessages.map((m) => [m.id, m])),
+    [chatMessages],
   );
+
+  const handleSend = useCallback(
+    (text: string) => {
+      sendMessage(chatId, text, replyingTo?.id);
+      setReplyingTo(null);
+    },
+    [sendMessage, chatId, replyingTo],
+  );
+
+  // Превью сообщения, на которое отвечают (резолв по reply_to_id)
+  const getReplyPreview = (msg: ChatMessageType) => {
+    if (!msg.reply_to_id) return undefined;
+    const original = messagesById.get(msg.reply_to_id);
+    return original
+      ? { sender: original.sender, text: original.text }
+      : undefined;
+  };
 
   //#TODO: спиздить компонент с taskmaster
   const virtualizer = useVirtualizer({
@@ -88,6 +122,26 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
       virtualizer.scrollToIndex(chatMessages.length - 1, { align: 'end' });
     }
   }, [chatMessages.length]);
+
+  // Сброс ответа при переключении чата
+  useEffect(() => {
+    setReplyingTo(null);
+  }, [chatId]);
+
+  // Переход к сообщению, на которое отвечали — скролл + кратковременная подсветка
+  const jumpToMessage = useCallback(
+    (messageId: string) => {
+      const index = chatMessages.findIndex((m) => m.id === messageId);
+      if (index === -1) return;
+
+      virtualizer.scrollToIndex(index, { align: 'center' });
+      setHighlightedId(messageId);
+      setTimeout(() => {
+        setHighlightedId((current) => (current === messageId ? null : current));
+      }, 1000);
+    },
+    [chatMessages, virtualizer],
+  );
 
   if (!effectiveChat) {
     return (
@@ -161,6 +215,10 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
                     <ChatMessage
                       message={msg}
                       isFirstInGroup={!prev || prev.sender_id !== msg.sender_id}
+                      onReply={setReplyingTo}
+                      replyPreview={getReplyPreview(msg)}
+                      onJumpToReply={jumpToMessage}
+                      isHighlighted={msg.id === highlightedId}
                     />
                   </div>
                 );
@@ -170,7 +228,11 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
         )}
 
         <Container className='absolute right-0 bottom-0 left-0 z-10 p-0'>
-          <ChatComposer onSend={handleSend} />
+          <ChatComposer
+            onSend={handleSend}
+            replyingTo={replyingTo}
+            onCancelReply={() => setReplyingTo(null)}
+          />
         </Container>
 
         <ChatSearch chatId={chatId} />

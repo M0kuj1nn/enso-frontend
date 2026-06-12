@@ -45,7 +45,7 @@ export interface UserPanelProps {
   isCameraOn?: boolean;
 }
 
-// ─── Индикатор звука (три полосы) ──────────────────────────────────────────
+// Индикатор звука (три полосы)
 
 const SoundIndicator: FC<{ active: boolean; activity?: number }> = ({
   active,
@@ -53,7 +53,7 @@ const SoundIndicator: FC<{ active: boolean; activity?: number }> = ({
 }) => {
   const bars = [0.5, 1, 0.7];
   return (
-    <span className='flex items-center gap-[2px]'>
+    <span className='flex items-center gap-[2]'>
       {bars.map((h, i) => (
         <span
           key={i}
@@ -156,9 +156,9 @@ const ExpandedPanel: FC<UserPanelProps> = ({
             title={isCameraOn ? 'Выключить камеру' : 'Включить камеру'}
           >
             {isCameraOn ? (
-              <Video className='h-[18px] w-[18px]' />
+              <Video className='h-[18] w-[18]' />
             ) : (
-              <VideoOff className='h-[18px] w-[18px]' />
+              <VideoOff className='h-[18] w-[18]' />
             )}
           </IconBtn>
           <IconBtn
@@ -166,10 +166,10 @@ const ExpandedPanel: FC<UserPanelProps> = ({
             active={isStreaming}
             title={isStreaming ? 'Остановить трансляцию' : 'Трансляция экрана'}
           >
-            <Monitor className='h-[18px] w-[18px]' />
+            <Monitor className='h-[18] w-[18]' />
           </IconBtn>
           <IconBtn onClick={onLeaveVoice} active danger title='Покинуть канал'>
-            <PhoneOff className='h-[18px] w-[18px]' />
+            <PhoneOff className='h-[18] w-[18]' />
           </IconBtn>
         </Container>
       </Container>
@@ -237,7 +237,7 @@ const ExpandedPanel: FC<UserPanelProps> = ({
   </Container>
 );
 
-// ─── Свёрнутая панель ──────────────────────────────────────────────────────
+// Свёрнутая панель
 
 const CollapsedPanel: FC<UserPanelProps> = ({
   userAvatar,
@@ -287,9 +287,9 @@ const CollapsedPanel: FC<UserPanelProps> = ({
             title={isCameraOn ? 'Выключить камеру' : 'Включить камеру'}
           >
             {isCameraOn ? (
-              <Video className='h-[18px] w-[18px]' />
+              <Video className='h-[18] w-[18]' />
             ) : (
-              <VideoOff className='h-[18px] w-[18px]' />
+              <VideoOff className='h-[18] w-[18]' />
             )}
           </IconBtn>
           <IconBtn
@@ -297,7 +297,7 @@ const CollapsedPanel: FC<UserPanelProps> = ({
             active={isStreaming}
             title={isStreaming ? 'Остановить трансляцию' : 'Трансляция'}
           >
-            <Monitor className='h-[18px] w-[18px]' />
+            <Monitor className='h-[18] w-[18]' />
           </IconBtn>
           <IconBtn
             onClick={onLeaveVoice}
@@ -305,7 +305,7 @@ const CollapsedPanel: FC<UserPanelProps> = ({
             danger
             title='Покинуть канал'
           >
-            <PhoneOff className='h-[18px] w-[18px]' />
+            <PhoneOff className='h-[18] w-[18]' />
           </IconBtn>
           <IconBtn
             onClick={onToggleDeafen}
@@ -314,9 +314,9 @@ const CollapsedPanel: FC<UserPanelProps> = ({
             title={isDeafened ? 'Включить звук' : 'Выключить звук'}
           >
             {isDeafened ? (
-              <VolumeX className='h-[18px] w-[18px]' />
+              <VolumeX className='h-[18] w-[18]' />
             ) : (
-              <Headphones className='h-[18px] w-[18px]' />
+              <Headphones className='h-[18] w-[18]' />
             )}
           </IconBtn>
         </Container>
@@ -342,14 +342,14 @@ const CollapsedPanel: FC<UserPanelProps> = ({
           title={isMicMuted ? 'Включить микрофон' : 'Выключить микрофон'}
         >
           {isMicMuted ? (
-            <MicOff className='h-[18px] w-[18px]' />
+            <MicOff className='h-[18] w-[18]' />
           ) : (
-            <Mic className='h-[18px] w-[18px]' />
+            <Mic className='h-[18] w-[18]' />
           )}
         </IconBtn>
 
         <IconBtn onClick={onOpenSettings} title='Настройки'>
-          <Settings className='h-[18px] w-[18px]' />
+          <Settings className='h-[18] w-[18]' />
         </IconBtn>
       </Container>
 
@@ -357,23 +357,23 @@ const CollapsedPanel: FC<UserPanelProps> = ({
       <Container
         variantsUi={{ style: 'blackglass', rounded: 'full' }}
         className={[
-          'w-full cursor-pointer items-center justify-center gap-[3px] px-3 py-2 transition-all duration-200',
+          'w-full cursor-pointer items-center justify-center gap-[3] px-3 py-2 transition-all duration-200',
           isInVoice
             ? 'bg-emerald-500/15 hover:bg-emerald-500/25'
             : 'hover:bg-white/5',
         ].join(' ')}
         onClick={() => setExtraOpen((v) => !v)}
         title={isInVoice ? 'Голосовой канал' : 'Нет голосового соединения'}
-        // @ts-expect-error Container forwards onClick fine
         as='button'
       >
+        @ts-expect-error Container forwards onClick fine
         <SoundIndicator active={isInVoice} activity={voiceActivity} />
       </Container>
     </Container>
   );
 };
 
-// ─── Экспортируемый компонент ───────────────────────────────────────────────
+// Экспортируемый компонент
 
 export const UserPanel: FC<UserPanelProps> = memo((props) => {
   if (props.isPanelOpen) return <ExpandedPanel {...props} />;

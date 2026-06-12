@@ -1,32 +1,35 @@
 'use client';
 
-import { FC, ReactNode, useCallback, useRef, useState } from 'react';
+import { FC, ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useAuth } from '@contexts/AuthContext';
 import { ChatContext } from '@contexts/ChatContext';
 import {
   MOCK_CHATS,
-  MOCK_FRIENDS,
   MOCK_MESSAGES,
+  MOCK_RELATIONSHIPS,
   MOCK_SEARCHABLE_USERS,
   MOCK_SERVERS,
 } from '@shared/mock/chat';
 import {
   Chat,
+  ChatMessage,
   Friend,
-  Message,
   Participant,
+  Relationship,
   Server,
   User,
 } from '@shared/types/chat';
+import { getFriendState } from '@shared/utils/friend.util';
 
 export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { user, isInitialized } = useAuth();
-  const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
+  const [relationships, setRelationships] =
+    useState<Relationship[]>(MOCK_RELATIONSHIPS);
   const [chats, setChats] = useState<Chat[]>(MOCK_CHATS);
   const [servers, setServers] = useState<Server[]>(MOCK_SERVERS);
   const [messages, setMessages] =
-    useState<Record<string, Message[]>>(MOCK_MESSAGES);
+    useState<Record<string, ChatMessage[]>>(MOCK_MESSAGES);
   const [activeVoiceChannelId, setActiveVoiceChannelId] = useState<
     string | null
   >(null);
@@ -36,6 +39,20 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     useState<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
+
+  // friends: вычисляется из relationships (status === 'accepted') + профилей пользователей
+  const friends = useMemo<Friend[]>(() => {
+    if (!user) return [];
+    const result: Friend[] = [];
+    for (const r of relationships) {
+      const friendState = getFriendState(r, user.id);
+      if (friendState !== 'friends') continue;
+      const otherId = r.sender_id === user.id ? r.receiver_id : r.sender_id;
+      const profile = MOCK_SEARCHABLE_USERS.find((u) => u.id === otherId);
+      if (profile) result.push({ ...profile, friendState });
+    }
+    return result;
+  }, [relationships, user]);
 
   const startScreenShare = useCallback(async () => {
     try {
@@ -163,15 +180,16 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
       hour: '2-digit',
       minute: '2-digit',
     });
-    const newMsg: Message = {
+    const newMsg: ChatMessage = {
       id: `local-${Date.now()}`,
+      target_id: chatId,
+      bucket: '2026-06', // TODO: подставить реальный год-месяц при подключении бэка
       text,
       sender_id: user!.id,
-      receiver_id: null,
-      media_links: [],
-      is_read: false,
+      reply_to_id: replyTo ?? null,
+      is_pinned: false,
+      media: [],
       reactions: [],
-      reply_to: replyTo ?? null,
       created_at: now,
       updated_at: now,
       sender: user!.name,
@@ -206,9 +224,26 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   // addFriend
   // заменить на POST /api/friends/request
   const addFriend = (userId: string) => {
-    const user = MOCK_SEARCHABLE_USERS.find((u) => u.id === userId);
-    if (!user || friends.some((f) => f.id === userId)) return;
-    setFriends((prev) => [...prev, { ...user, friendState: 'friends' }]);
+    const target = MOCK_SEARCHABLE_USERS.find((u) => u.id === userId);
+    if (!user || !target) return;
+    const alreadyExists = relationships.some(
+      (r) =>
+        (r.sender_id === user.id && r.receiver_id === userId) ||
+        (r.sender_id === userId && r.receiver_id === user.id),
+    );
+    if (alreadyExists) return;
+
+    const now = new Date().toISOString();
+    setRelationships((prev) => [
+      ...prev,
+      {
+        sender_id: user.id,
+        receiver_id: userId,
+        status: 'pending',
+        created_at: now,
+        updated_at: now,
+      },
+    ]);
   };
 
   // createDm

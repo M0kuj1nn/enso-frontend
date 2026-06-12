@@ -51,7 +51,7 @@ export const CreateServerModal: FC<CreateServerModalProps> = ({
     <Modal isOpen={isOpen} onClose={handleClose}>
       <Container
         variantsUi={{ flow: 'col' }}
-        className='w-[440px] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1f] p-0'
+        className='w-[440] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1f] p-0'
       >
         {/* Шапка */}
         <Container className='border-b border-white/5 px-6 pt-6 pb-4'>
