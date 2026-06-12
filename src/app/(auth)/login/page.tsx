@@ -52,7 +52,11 @@ const Login = () => {
       </div>
       <Container
         className='relative z-10 w-120 shrink-0 rounded-4xl p-18'
-        variantsUi={{ flow: 'col', items: 'centered', style: 'whiteglass' }}
+        variantsUi={{
+          flow: 'col',
+          items: 'centered',
+          style: 'form-whiteglass',
+        }}
       >
         <FormHeader title='Добро Пожаловать!'>
           Магия общения начинается прямо здесь

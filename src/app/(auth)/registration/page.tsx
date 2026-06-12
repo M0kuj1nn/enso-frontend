@@ -47,7 +47,11 @@ const Registration = () => {
       </div>
       <Container
         className='relative z-10 w-120 shrink-0 rounded-4xl p-18'
-        variantsUi={{ flow: 'col', items: 'centered', style: 'whiteglass' }}
+        variantsUi={{
+          flow: 'col',
+          items: 'centered',
+          style: 'form-whiteglass',
+        }}
       >
         <FormHeader title='Создание аккаунта'>
           Присоединяйся к пространству живого общения!

@@ -32,10 +32,9 @@ export const Container = ve(
       },
 
       style: {
-        whiteglass:
-          'bg-white/2 backdrop-blur-2xl shadow-[inset_2px_1px_0_rgba(255,255,255,0.30),inset_-1px_-0.5px_0_rgba(255,255,255,0.14),inset_1px_0_0_rgba(255,255,255,0.06),inset_0_1px_0_rgba(255,255,255,0.06),inset_-1px_0_0_rgba(0,0,0,0.06),inset_0_-1px_0_rgba(255,255,255,0.06)]',
-        blackglass:
-          'bg-[#0D0D0D]/20 backdrop-blur-md shadow-[inset_2px_1px_0_rgba(255,255,255,0.18),inset_-1px_-0.5px_0_rgba(255,255,255,0.09),inset_1px_0_0_rgba(255,255,255,0.09),inset_0_1px_0_rgba(255,255,255,0.05),inset_-1px_0_0_rgba(0,0,0,0.30),inset_0_-1px_0_rgba(0,0,0,0.20)]',
+        whiteglass: 'glass-white',
+        blackglass: 'glass-black',
+        'form-whiteglass': 'glass-white-from',
       },
     },
   }),

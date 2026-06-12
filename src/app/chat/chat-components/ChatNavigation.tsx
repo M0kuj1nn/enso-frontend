@@ -1,336 +1,64 @@
 'use client';
 
-import { FC, memo, useState } from 'react';
+import { FC, useState } from 'react';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { Conditional } from '@components/Conditionals';
 import { useChatContext } from '@contexts/ChatContext';
-import { useDebounce } from '@shared/hooks/useDebounce';
-import { useMicrophone } from '@shared/hooks/useMicrophone';
-import { Chat } from '@shared/types/chat';
-import { Server } from '@shared/types/chat';
-import { Avatar } from '@ui/Avatar';
-import { Badge } from '@ui/Badge';
-import { Button } from '@ui/Button';
 import { Container } from '@ui/Container';
-import { Input } from '@ui/Input';
-import { Text } from '@ui/typography/Text';
-import {
-  Menu,
-  MessageSquarePlus,
-  Mic,
-  MicOff,
-  Plus,
-  Search,
-  Settings,
-  User,
-} from 'lucide-react';
 
 import { AddFriendModal } from './AddFriendModal';
-import { ChannelType, CreateChannelModal } from './CreateChannelModal';
+import { CreateChannelModal } from './CreateChannelModal';
 import { CreateServerModal } from './CreateServerModal';
+import { NavPanel } from './NavPanel';
+import { NavStrip } from './NavStrip';
 import { NewChatModal } from './NewChatModal';
 import { ServerNavPanel } from './ServerNavPanel';
 import { UserPanel } from './UserPanel';
-
-// ChatItem
-interface ChatItemProps {
-  chat: Chat;
-  isActive: boolean;
-  onSelect: (id: string) => void;
-}
-
-const ChatItem: FC<ChatItemProps> = memo(({ chat, isActive, onSelect }) => (
-  <Button
-    variantsUi={{ color: 'ghost' }}
-    cn={[
-      'w-full justify-start items-center gap-3 px-3 py-2.5 rounded-none relative',
-      isActive && 'bg-gradient-to-r from-[#A74BE9]/20 to-[#A74BE9]/5',
-    ]}
-    onClick={() => onSelect(chat.id)}
-  >
-    <Conditional condition={isActive}>
-      <Container className='absolute top-2 bottom-2 left-0 w-[3] rounded-r-full bg-linear-to-b from-[#DC52FF] to-[#8B10E3] p-0' />
-    </Conditional>
-
-    <Avatar
-      src={chat.avatar}
-      alt={chat.name}
-      size='md'
-      shape='rounded'
-      status={chat.type === 'dm' ? 'online' : undefined}
-    />
-
-    <Container
-      variantsUi={{ flow: 'col' }}
-      className='min-w-0 flex-1 gap-0.5 p-0'
-    >
-      <Container className='items-center justify-between gap-2 p-0'>
-        <Text
-          variantsUi={{ size: 'sm', weight: 'medium' }}
-          className={isActive ? 'text-white' : 'text-gray-300'}
-        >
-          {chat.name}
-        </Text>
-        <Badge count={chat.unread} />
-      </Container>
-      <Text
-        as='p'
-        variantsUi={{ size: 'xs', color: 'muted' }}
-        className='truncate text-left leading-tight'
-      >
-        {chat.lastMessageSenderName
-          ? `${chat.lastMessageSenderName}: ${chat.lastMessage}`
-          : chat.lastMessage || 'Нет сообщений'}
-      </Text>
-    </Container>
-  </Button>
-));
-
-ChatItem.displayName = 'ChatItem';
-
-// NavStrip
-// Крайняя левая колонка с Бургер меню, DM и серваками
-interface NavStripProps {
-  isPanelOpen: boolean;
-  isMuted: boolean;
-  currentUserAvatar: string;
-  currentUserName: string;
-  currentUserStatus: 'online' | 'away' | 'offline';
-  onTogglePanel: () => void;
-  onToggleMute: () => void;
-  onDmClick: () => void;
-  onAddServerClick: () => void;
-  servers: Server[];
-  activeServerId: string;
-  onServerClick: (serverId: string) => void;
-}
-
-const NavStrip: FC<NavStripProps> = memo(
-  ({
-    isPanelOpen,
-    isMuted,
-    currentUserAvatar,
-    currentUserName,
-    currentUserStatus,
-    onTogglePanel,
-    onToggleMute,
-    onDmClick,
-    onAddServerClick,
-    servers,
-    activeServerId,
-    onServerClick,
-  }) => {
-    const pathname = usePathname();
-    const isDmActive = pathname.startsWith('/chat/@me');
-
-    return (
-      <Container
-        variantsUi={{ flow: 'col', items: 'centered' }}
-        className='h-full w-[70] shrink-0 gap-0 border-r border-white/5 bg-[#1a1a1f] p-0'
-      >
-        <Container
-          variantsUi={{ flow: 'col' }}
-          className='flex-1 gap-0 overflow-y-auto p-0'
-        >
-          {/* Бургер */}
-          <Container className='h-16 items-center p-0 px-3'>
-            <Button
-              variantsUi={{ color: 'ghost', rounded: 'xl' }}
-              className='h-10 w-10 p-0'
-              title={isPanelOpen ? 'Свернуть панель' : 'Развернуть панель'}
-              onClick={onTogglePanel}
-            >
-              <Menu className='h-5 w-5' />
-            </Button>
-          </Container>
-
-          {/* DM */}
-          <Container className='items-center p-0 px-3 py-3'>
-            <Button
-              variantsUi={{
-                color: isDmActive ? 'primary' : 'ghost',
-                rounded: 'xl',
-              }}
-              className='h-10 w-10 p-0'
-              title='Direct Messages'
-              onClick={onDmClick}
-            >
-              <User className='h-5 w-5' />
-            </Button>
-          </Container>
-
-          {/* Разделитель */}
-          <Container className='p-0 px-3'>
-            <Container className='h-[1] w-full rounded-full bg-white/10 p-0' />
-          </Container>
-
-          {/* Серверы */}
-          {servers.map((server) => (
-            <Container key={server.id} className='p-0 px-3 pt-3'>
-              <Button
-                variantsUi={{ color: 'ghost', rounded: 'full' }}
-                className={`h-10 w-10 overflow-hidden border-2 p-0 transition-colors ${
-                  activeServerId === server.id
-                    ? 'border-[#A74BE9]'
-                    : 'border-transparent'
-                }`}
-                title={server.name}
-                onClick={() => onServerClick(server.id)}
-              >
-                <Avatar
-                  src={server.icon}
-                  alt={server.name}
-                  size='sm'
-                  shape='rounded'
-                />
-              </Button>
-            </Container>
-          ))}
-
-          {/* Кнопка добавить сервер */}
-          <Container className='p-0 px-3 pt-3'>
-            <Button
-              variantsUi={{ color: 'ghost', rounded: 'full' }}
-              className='h-10 w-10 border border-dashed border-white/20 p-0'
-              title='Добавить сервер'
-              onClick={onAddServerClick}
-            >
-              <Plus className='h-5 w-5 text-[#969696]' />
-            </Button>
-          </Container>
-        </Container>
-      </Container>
-    );
-  },
-);
-
-NavStrip.displayName = 'NavStrip';
-
-// NavPanel
-// Раскрывающаяся панель: поиск, список чатов
-
-interface NavPanelProps {
-  chats: Chat[];
-  activeChatId: string;
-  isMuted: boolean;
-  currentUserAvatar: string;
-  currentUserName: string;
-  currentUserStatus: 'online' | 'away' | 'offline';
-  currentUserTag: string;
-  onSelect: (id: string) => void;
-  onToggleMute: () => void;
-  onNewChat: () => void;
-}
-
-const NavPanel: FC<NavPanelProps> = memo(
-  ({ chats, activeChatId, onSelect, onNewChat }) => {
-    const [search, setSearch] = useState('');
-    const debouncedSearch = useDebounce(search, 300);
-
-    const filtered = chats.filter((c) =>
-      c.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
-    );
-    const groups = filtered.filter((c) => c.type === 'group');
-    const dms = filtered.filter((c) => c.type === 'dm');
-
-    return (
-      <Container
-        variantsUi={{ flow: 'col' }}
-        className='h-full w-64 shrink-0 gap-0 border-r border-white/5 bg-[#141418] p-0'
-      >
-        {/* Заголовок */}
-        <Container className='h-16 justify-between border-b border-white/5 py-4'>
-          <Text variantsUi={{ weight: 'semibold' }}>Direct Messages</Text>
-          <Button
-            variantsUi={{ color: 'ghost', rounded: 'lg' }}
-            className='p-1.5'
-            title='Новый чат'
-            onClick={onNewChat}
-          >
-            <MessageSquarePlus className='h-4 w-4' />
-          </Button>
-        </Container>
-
-        {/* Поиск */}
-        <Container className='border-b border-white/5 px-3 py-3'>
-          <Container className='relative w-full p-0'>
-            <Search className='pointer-events-none absolute top-1/2 right-6 z-10 h-4 w-4 -translate-y-1/2 text-[#969696]' />
-            <Input
-              variantsUi={{ style: 'search' }}
-              placeholder='Поиск...'
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </Container>
-        </Container>
-
-        {/* Список чатов */}
-        <Container
-          variantsUi={{ flow: 'col' }}
-          className='flex-1 gap-3 overflow-y-auto p-3'
-        >
-          {/* Группы */}
-          <Conditional condition={groups.length > 0}>
-            <Container variantsUi={{ flow: 'col' }} className='gap-0 p-0 py-3'>
-              <Text
-                variantsUi={{ size: 'xs', color: 'muted' }}
-                className='mb-2 px-4 font-semibold tracking-wider uppercase'
-              >
-                Группы
-              </Text>
-              {groups.map((chat) => (
-                <ChatItem
-                  key={chat.id}
-                  chat={chat}
-                  isActive={chat.id === activeChatId}
-                  onSelect={onSelect}
-                />
-              ))}
-            </Container>
-          </Conditional>
-
-          {/* Личные сообщения */}
-          <Conditional condition={dms.length > 0}>
-            <Container variantsUi={{ flow: 'col' }} className='gap-0 p-0 py-3'>
-              <Text
-                variantsUi={{ size: 'xs', color: 'muted' }}
-                className='mb-2 px-4 font-semibold tracking-wider uppercase'
-              >
-                Личные сообщения
-              </Text>
-              {dms.map((chat) => (
-                <ChatItem
-                  key={chat.id}
-                  chat={chat}
-                  isActive={chat.id === activeChatId}
-                  onSelect={onSelect}
-                />
-              ))}
-            </Container>
-          </Conditional>
-
-          <Conditional condition={filtered.length === 0}>
-            <Container
-              variantsUi={{ items: 'centered' }}
-              className='flex-1 py-8'
-            >
-              <Text variantsUi={{ size: 'sm', color: 'muted' }}>Нет чатов</Text>
-            </Container>
-          </Conditional>
-        </Container>
-      </Container>
-    );
-  },
-);
-
-NavPanel.displayName = 'NavPanel';
+import { useActiveRoute } from './useActiveRoute';
+import { useNavigationModals } from './useNavigationModals';
+import { useVoiceNavigation } from './useVoiceNavigation';
 
 // ChatNavigation
 // Композиция: только состояние и роутинг, никакого JSX кроме сборки частей
 
 export const ChatNavigation: FC = () => {
+  //useActiveRoute
+  const { activeChatId, activeServerId, activeServer, activeChannelId } =
+    useActiveRoute();
+
+  //useVoiceNavigation
+  const {
+    isMuted,
+    isDeafened,
+    volume,
+    onToggleMic,
+    onToggleDeafen,
+    onLeaveVoice,
+    onToggleStream,
+    onToggleCamera,
+    activeScreenStream,
+    activeCameraStream,
+    activeVoiceChannelId,
+  } = useVoiceNavigation();
+
+  //useNavigationModals
+  const {
+    isAddFriendOpen,
+    isNewChatOpen,
+    isCreateServerOpen,
+    createChannelModal,
+    openAddFriend,
+    closeAddFriend,
+    openNewChat,
+    closeNewChat,
+    openCreateServer,
+    closeCreateServer,
+    openCreateChannel,
+    closeCreateChannel,
+  } = useNavigationModals();
+
   const {
     currentUser,
     chats,
@@ -339,42 +67,10 @@ export const ChatNavigation: FC = () => {
     addTextChannel,
     addVoiceChannel,
     joinVoiceChannel,
-    activeVoiceChannelId,
-    leaveVoiceChannel,
-    startScreenShare,
-    activeScreenStream,
-    stopScreenShare,
-    startCamera,
-    stopCamera,
-    activeCameraStream,
-    setMySpeaking,
   } = useChatContext();
   const router = useRouter();
-  const pathname = usePathname();
 
   const [isPanelOpen, setIsPanelOpen] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(0);
-  const [isAddFriendOpen, setIsAddFriendOpen] = useState(false);
-  const [isNewChatOpen, setIsNewChatOpen] = useState(false);
-  const [isCreateServerOpen, setIsCreateServerOpen] = useState(false);
-  const [createChannelModal, setCreateChannelModal] = useState<{
-    open: boolean;
-    type: ChannelType;
-  }>({ open: false, type: 'text' });
-  const [isDeafened, setIsDeafened] = useState(false);
-  const activeChatId = pathname.startsWith('/chat/@me')
-    ? pathname.split('/')[3]
-    : '';
-
-  const activeServerId =
-    pathname.startsWith('/chat/') && !pathname.startsWith('/chat/@me')
-      ? pathname.split('/')[2]
-      : '';
-
-  const activeServer = servers.find((s) => s.id === activeServerId) ?? null;
-
-  const activeChannelId = pathname.split('/')[3] ?? '';
 
   const handleSelect = (id: string) => router.push(`/chat/@me/${id}`);
 
@@ -388,26 +84,6 @@ export const ChatNavigation: FC = () => {
     router.push(`/chat/${server.id}`);
   };
 
-  const handleLeaveVoice = () => {
-    const server = servers.find((s) =>
-      s.voice_channels.some((vc) => vc.id === activeVoiceChannelId),
-    );
-    leaveVoiceChannel();
-    if (server) {
-      const firstText = server.text_channels[0];
-      router.push(
-        firstText ? `/chat/${server.id}/${firstText.id}` : `/chat/${server.id}`,
-      );
-    }
-  };
-
-  useMicrophone(!!activeVoiceChannelId && !isMuted, {
-    onVolume: (vol, speaking) => {
-      setVolume(vol);
-      setMySpeaking(speaking);
-    },
-  });
-
   return (
     <>
       <Container className='relative h-full shrink-0 gap-0 border-r border-white/5 p-0'>
@@ -418,9 +94,9 @@ export const ChatNavigation: FC = () => {
           currentUserName={currentUser.name}
           currentUserStatus={currentUser.status}
           onTogglePanel={() => setIsPanelOpen((v) => !v)}
-          onToggleMute={() => setIsMuted((v) => !v)}
+          onToggleMute={onToggleMic}
           onDmClick={handleDmClick}
-          onAddServerClick={() => setIsCreateServerOpen(true)}
+          onAddServerClick={openCreateServer}
           servers={servers}
           activeServerId={activeServerId}
           onServerClick={(id) => router.push(`/chat/${id}`)}
@@ -438,12 +114,8 @@ export const ChatNavigation: FC = () => {
                 joinVoiceChannel(channelId);
                 router.push(`/chat/${activeServer!.id}/${channelId}/voice`);
               }}
-              onAddTextChannel={() =>
-                setCreateChannelModal({ open: true, type: 'text' })
-              }
-              onAddVoiceChannel={() =>
-                setCreateChannelModal({ open: true, type: 'voice' })
-              }
+              onAddTextChannel={() => openCreateChannel('text')}
+              onAddVoiceChannel={() => openCreateChannel('voice')}
             />
           ) : (
             <NavPanel
@@ -455,8 +127,8 @@ export const ChatNavigation: FC = () => {
               currentUserStatus={currentUser.status}
               currentUserTag={currentUser.username}
               onSelect={handleSelect}
-              onToggleMute={() => setIsMuted((v) => !v)}
-              onNewChat={() => setIsNewChatOpen(true)}
+              onToggleMute={onToggleMic}
+              onNewChat={openNewChat}
             />
           )}
         </Conditional>
@@ -480,39 +152,34 @@ export const ChatNavigation: FC = () => {
             })()}
             isMicMuted={isMuted}
             isDeafened={isDeafened}
-            onToggleMic={() => setIsMuted((v) => !v)}
-            onToggleDeafen={() => setIsDeafened((v) => !v)}
+            onToggleMic={onToggleMic}
+            onToggleDeafen={onToggleDeafen}
             onOpenSettings={() => {}}
-            onLeaveVoice={handleLeaveVoice}
-            onToggleStream={
-              activeScreenStream ? stopScreenShare : startScreenShare
-            }
+            onLeaveVoice={onLeaveVoice}
+            onToggleStream={onToggleStream}
             isStreaming={activeScreenStream !== null}
-            onToggleCamera={activeCameraStream ? stopCamera : startCamera}
+            onToggleCamera={onToggleCamera}
             isCameraOn={activeCameraStream !== null}
             voiceActivity={volume}
           />
         </div>
       </Container>
 
-      <AddFriendModal
-        isOpen={isAddFriendOpen}
-        onClose={() => setIsAddFriendOpen(false)}
-      />
+      <AddFriendModal isOpen={isAddFriendOpen} onClose={closeAddFriend} />
       <NewChatModal
         isOpen={isNewChatOpen}
-        onClose={() => setIsNewChatOpen(false)}
+        onClose={closeNewChat}
         onCreated={(id) => router.push(`/chat/@me/${id}`)}
       />
       <CreateServerModal
         isOpen={isCreateServerOpen}
-        onClose={() => setIsCreateServerOpen(false)}
+        onClose={closeCreateServer}
         onCreated={handleCreateServer}
       />
       <CreateChannelModal
         isOpen={createChannelModal.open}
         channelType={createChannelModal.type}
-        onClose={() => setCreateChannelModal((v) => ({ ...v, open: false }))}
+        onClose={closeCreateChannel}
         onCreated={(name) => {
           if (activeServer) {
             createChannelModal.type === 'text'
