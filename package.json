@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "generate:api": "npx swagger-typescript-api generate -p http://0.0.0.0:8000/openapi.json -o ./src/api/generated -n client.ts"
   },
   "dependencies": {
     "@heroui/react": "^3.0.3",
@@ -16,6 +17,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.100.11",
     "@tanstack/react-virtual": "^3.13.24",
+    "axios": "^1.17.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
@@ -42,6 +44,7 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "swagger-typescript-api": "^13.12.2",
     "tailwindcss": "^4"
   },
   "lint-staged": {
