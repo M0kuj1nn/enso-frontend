@@ -101,7 +101,7 @@ export const ChatHeader: FC<ChatHeaderProps> = memo(
         <Container
           as='header'
           variantsUi={{ style: 'whiteglass', rounded: 'full' }}
-          className='group w-full cursor-pointer gap-3 bg-[#25252c]/80 px-4 py-2'
+          className='group w-full cursor-pointer gap-3 px-4 py-2'
           onClick={openDetails}
         >
           <Avatar src={chat.avatar} alt={chat.name} size='md' shape='rounded' />

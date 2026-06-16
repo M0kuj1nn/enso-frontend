@@ -142,8 +142,8 @@ export const ChatComposer: FC<ChatComposerProps> = memo(({ onSend }) => {
       />
 
       <Container
-        variantsUi={{ style: 'whiteglass', rounded: 'full' }}
-        className='w-full gap-2 bg-[#25252c]/80 p-0 px-4 py-2'
+        variantsUi={{ rounded: 'full', style: 'whiteglass' }}
+        className='w-full gap-2 p-0 px-4 py-2'
       >
         <Container ref={attachWrapperRef} className='relative shrink-0 p-0'>
           <AttachMenu
