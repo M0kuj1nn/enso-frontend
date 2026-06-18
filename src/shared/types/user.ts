@@ -13,4 +13,5 @@ export interface User {
   name: string;
   avatar: string;
   status: UserStatus;
+  job_title?: string;
 }

@@ -27,6 +27,8 @@ export interface ChatContextValue {
   // Операции (WS-ready интерфейс)
   // WS: каждую функцию заменить на ws.send() + оптимистичный апдейт стейта
 
+  markAsRead: (chatId: string) => void;
+
   sendMessage: (chatId: string, text: string, replyTo?: string) => void;
 
   searchUsers: (query: string) => User[];

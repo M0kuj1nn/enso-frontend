@@ -172,6 +172,14 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setActiveVoiceChannelId(null);
   };
 
+  // markAsRead
+  // WS: заменить на ws.send({ type: 'MESSAGE_READ', ... }) + оптимистичный сброс unread
+  const markAsRead = (chatId: string) => {
+    setChats((prev) =>
+      prev.map((c) => (c.id === chatId ? { ...c, unread: 0 } : c)),
+    );
+  };
+
   // sendMessage
   // WS: заменить на ws.send({ type: 'MESSAGE_CREATED', payload: { text, reply_to, ... } })
   //     Оставить оптимистичное добавление пока сервер не подтвердил
@@ -406,6 +414,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
         activeVoiceChannelId,
         activeScreenStream,
         activeCameraStream,
+        markAsRead,
         sendMessage,
         searchUsers,
         addFriend,

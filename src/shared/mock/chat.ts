@@ -26,6 +26,7 @@ export const MOCK_SEARCHABLE_USERS: User[] = [
     avatar:
       'https://images.unsplash.com/photo-1573497620166-aef748c8c792?w=100&h=100&fit=crop',
     status: 'online',
+    job_title: 'Старший Дизайнер',
   },
   {
     id: 'u2',
@@ -34,6 +35,7 @@ export const MOCK_SEARCHABLE_USERS: User[] = [
     avatar:
       'https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?w=100&h=100&fit=crop',
     status: 'online',
+    job_title: 'Бизнес Аналитик',
   },
   {
     id: 'u3',
@@ -42,6 +44,7 @@ export const MOCK_SEARCHABLE_USERS: User[] = [
     avatar:
       'https://images.unsplash.com/photo-1752860872185-78926b52ef77?w=100&h=100&fit=crop',
     status: 'away',
+    job_title: 'Специалист по связям с общественностью',
   },
   {
     id: 'u4',
@@ -50,6 +53,7 @@ export const MOCK_SEARCHABLE_USERS: User[] = [
     avatar:
       'https://images.unsplash.com/photo-1765248149092-4e0ea5e2edd9?w=100&h=100&fit=crop',
     status: 'offline',
+    job_title: 'Бизнес Аналитик',
   },
   {
     id: 'u5',
@@ -58,6 +62,7 @@ export const MOCK_SEARCHABLE_USERS: User[] = [
     avatar:
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
     status: 'online',
+    job_title: 'Старший Дизайнер',
   },
 ];
 

@@ -50,7 +50,7 @@ interface ChatAreaProps {
 }
 
 export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
-  const { chats, messages, participants, sendMessage, servers } =
+  const { chats, messages, participants, sendMessage, servers, markAsRead } =
     useChatContext();
 
   // ref на scroll-контейнер — нужен virtualizer'у для измерений
@@ -123,9 +123,10 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
     }
   }, [chatMessages.length]);
 
-  // Сброс ответа при переключении чата
+  // Сброс ответа + сброс unread при переключении/открытии чата
   useEffect(() => {
     setReplyingTo(null);
+    markAsRead(chatId);
   }, [chatId]);
 
   // Переход к сообщению, на которое отвечали — скролл + кратковременная подсветка
@@ -181,7 +182,7 @@ export const ChatArea: FC<ChatAreaProps> = ({ chatId }) => {
         {chatMessages.length > 0 && (
           <Container
             ref={scrollRef}
-            className='flex-1 overflow-y-auto p-0 pt-20 pb-20'
+            className='chat-scrollbar flex-1 overflow-y-auto p-0 pt-20 pb-20'
           >
             <div
               style={{

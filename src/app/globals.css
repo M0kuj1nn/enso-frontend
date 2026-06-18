@@ -35,3 +35,34 @@
   --font-unbounded: var(--font-unbounded);
 }
 
+/* Скрытый скроллбар (для wheel-пикера эмодзи) */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Кастомный скроллбар — общие стили */
+.emoji-scrollbar::-webkit-scrollbar,
+.chat-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.emoji-scrollbar::-webkit-scrollbar-track,
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.emoji-scrollbar::-webkit-scrollbar-thumb,
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(167, 75, 233, 0.4);
+  border-radius: 9999px;
+}
+
+.emoji-scrollbar::-webkit-scrollbar-thumb:hover,
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(167, 75, 233, 0.75);
+}
+

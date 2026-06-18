@@ -89,6 +89,11 @@ export const ChatDetailsPanel: FC<ChatDetailsPanelProps> = memo(
     const { isDetailsOpen, closeDetails } = useChatDetailsContext();
     const [isPinnedOpen, setIsPinnedOpen] = useState(false);
 
+    const isDm = chat.type === 'dm';
+    const otherParticipant = isDm
+      ? participants.find((p) => p.name === chat.name)
+      : null;
+
     return (
       <Conditional condition={isDetailsOpen}>
         <Container
@@ -99,7 +104,7 @@ export const ChatDetailsPanel: FC<ChatDetailsPanelProps> = memo(
         {/* Панель */}
         <Container
           variantsUi={{ flow: 'col' }}
-          className='absolute top-0 right-0 bottom-0 z-50 w-80 gap-0 overflow-y-auto border-l border-white/10 bg-[#1a1a1f] p-0'
+          className='chat-scrollbar absolute top-0 right-0 bottom-0 z-50 w-80 gap-0 overflow-y-auto border-l border-white/10 bg-[#1a1a1f] p-0'
         >
           {/* Шапка */}
           <Container className='sticky top-0 shrink-0 justify-between border-b border-white/10 bg-[#1a1a1f]/95 px-5 py-4 backdrop-blur-sm'>
@@ -130,41 +135,45 @@ export const ChatDetailsPanel: FC<ChatDetailsPanelProps> = memo(
               {chat.name}
             </Text>
             <Text variantsUi={{ size: 'sm', color: 'muted' }}>
-              {participants.length} участников
+              {isDm
+                ? (otherParticipant?.job_title ?? '')
+                : `${participants.length} участников`}
             </Text>
           </Container>
 
-          <Container
-            variantsUi={{ flow: 'col' }}
-            className='gap-3 border-b border-white/5 px-4 py-4'
-          >
-            <SectionTitle label='Участники' />
-            {participants.map((p) => (
-              <Container
-                key={p.id}
-                className='gap-3 rounded-xl p-0 px-1 py-1.5 transition-colors hover:bg-white/5'
-              >
-                <Avatar
-                  src={p.avatar}
-                  alt={p.name}
-                  size='md'
-                  shape='rounded'
-                  status={p.status}
-                />
+          {!isDm && (
+            <Container
+              variantsUi={{ flow: 'col' }}
+              className='gap-3 border-b border-white/5 px-4 py-4'
+            >
+              <SectionTitle label='Участники' />
+              {participants.map((p) => (
                 <Container
-                  variantsUi={{ flow: 'col' }}
-                  className='flex-1 gap-0 p-0'
+                  key={p.id}
+                  className='gap-3 rounded-xl p-0 px-1 py-1.5 transition-colors hover:bg-white/5'
                 >
-                  <Text variantsUi={{ size: 'sm', weight: 'medium' }}>
-                    {p.name}
-                  </Text>
-                  <Text variantsUi={{ size: 'xs', color: 'muted' }}>
-                    {p.status}
-                  </Text>
+                  <Avatar
+                    src={p.avatar}
+                    alt={p.name}
+                    size='md'
+                    shape='rounded'
+                    status={p.status}
+                  />
+                  <Container
+                    variantsUi={{ flow: 'col' }}
+                    className='flex-1 gap-0 p-0'
+                  >
+                    <Text variantsUi={{ size: 'sm', weight: 'medium' }}>
+                      {p.name}
+                    </Text>
+                    <Text variantsUi={{ size: 'xs', color: 'muted' }}>
+                      {p.job_title ?? p.status}
+                    </Text>
+                  </Container>
                 </Container>
-              </Container>
-            ))}
-          </Container>
+              ))}
+            </Container>
+          )}
 
           <Container
             variantsUi={{ flow: 'col' }}
