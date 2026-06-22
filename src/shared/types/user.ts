@@ -7,6 +7,14 @@ export type UserStatus = 'online' | 'away' | 'offline';
 //   status   <- status         (бэк отдаёт произвольную строку, фронт сужает до UserStatus)
 //
 // email/password/created_at/updated_at с бэка - в чате не используются
+export interface UserConnections {
+  twitter?: string;
+  github?: string;
+  dribbble?: string;
+  linkedin?: string;
+  website?: string;
+}
+
 export interface User {
   id: string;
   username: string;
@@ -14,4 +22,6 @@ export interface User {
   avatar: string;
   status: UserStatus;
   job_title?: string;
+  bio?: string;
+  connections?: UserConnections;
 }

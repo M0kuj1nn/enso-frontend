@@ -1,6 +1,14 @@
 'use client';
 
-import { FC, ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import {
+  FC,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { useAuth } from '@contexts/AuthContext';
 import { ChatContext } from '@contexts/ChatContext';
@@ -22,6 +30,17 @@ import {
 } from '@shared/types/chat';
 import { getFriendState } from '@shared/utils/friend.util';
 
+// Демо: пул случайных ответов для имитации активности собеседников в группе
+const DEMO_REPLY_POOL = [
+  'Отличная идея!',
+  'Звучит отлично 👍',
+  'Поддерживаю!',
+  'Вперёд к новым вершинам!',
+  'Всем привет)',
+  'Супер!',
+  'Очередной тест))',
+];
+
 export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { user, isInitialized } = useAuth();
   const [relationships, setRelationships] =
@@ -39,6 +58,16 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     useState<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
+  const demoReplyTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  // Демо: счётчик подряд отправленных мной сообщений в ЛС (для триггера авто-ответа)
+  const dmMessageCountRef = useRef<Record<string, number>>({});
+
+  useEffect(() => {
+    const timers = demoReplyTimersRef.current;
+    return () => {
+      timers.forEach(clearTimeout);
+    };
+  }, []);
 
   // friends: вычисляется из relationships (status === 'accepted') + профилей пользователей
   const friends = useMemo<Friend[]>(() => {
@@ -172,6 +201,46 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setActiveVoiceChannelId(null);
   };
 
+  // Демо: добавляет входящее сообщение от собеседника (имитация ответа)
+  // TODO: убрать при подключении реального бэка/WS
+  const pushDemoIncomingMessage = (
+    chatId: string,
+    responder: User,
+    text: string,
+  ) => {
+    const replyTime = new Date().toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const replyMsg: ChatMessage = {
+      id: `local-${Date.now()}`,
+      target_id: chatId,
+      bucket: '2026-06',
+      text,
+      sender_id: responder.id,
+      reply_to_id: null,
+      is_pinned: false,
+      media: [],
+      reactions: [],
+      created_at: replyTime,
+      updated_at: replyTime,
+      sender: responder.name,
+      avatar: responder.avatar,
+      isOwn: false,
+    };
+    setMessages((prev) => ({
+      ...prev,
+      [chatId]: [...(prev[chatId] ?? []), replyMsg],
+    }));
+    setChats((prev) =>
+      prev.map((c) =>
+        c.id === chatId
+          ? { ...c, lastMessage: text, lastMessageSenderName: responder.name }
+          : c,
+      ),
+    );
+  };
+
   // markAsRead
   // WS: заменить на ws.send({ type: 'MESSAGE_READ', ... }) + оптимистичный сброс unread
   const markAsRead = (chatId: string) => {
@@ -215,6 +284,51 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
           : c,
       ),
     );
+
+    // Демо: имитация активности собеседника
+    // TODO: убрать при подключении реального бэка/WS — сообщения будут приходить от живых людей
+    const chat = chats.find((c) => c.id === chatId);
+
+    if (chat?.type === 'group') {
+      // В группе — случайный ответ от случайного участника через 7-8 секунд
+      const otherIds = chat.participantIds.filter((id) => id !== 'me');
+      if (otherIds.length > 0) {
+        const responderId =
+          otherIds[Math.floor(Math.random() * otherIds.length)];
+        const responder = MOCK_SEARCHABLE_USERS.find(
+          (u) => u.id === responderId,
+        );
+        if (responder) {
+          const delay = 4000 + Math.random() * 2000;
+          const replyText =
+            DEMO_REPLY_POOL[Math.floor(Math.random() * DEMO_REPLY_POOL.length)];
+          const timer = setTimeout(() => {
+            pushDemoIncomingMessage(chatId, responder, replyText);
+          }, delay);
+          demoReplyTimersRef.current.push(timer);
+        }
+      }
+    } else if (chat?.type === 'dm') {
+      // В ЛС — после 2 подряд отправленных мной сообщений собеседник отвечает через 4 секунды
+      const count = (dmMessageCountRef.current[chatId] ?? 0) + 1;
+      dmMessageCountRef.current[chatId] = count;
+
+      if (count >= 2) {
+        dmMessageCountRef.current[chatId] = 0;
+        const otherId = chat.participantIds.find((id) => id !== 'me');
+        const responder = MOCK_SEARCHABLE_USERS.find((u) => u.id === otherId);
+        if (responder) {
+          const timer = setTimeout(() => {
+            pushDemoIncomingMessage(
+              chatId,
+              responder,
+              'Я проверю обязательно 👍',
+            );
+          }, 4000);
+          demoReplyTimersRef.current.push(timer);
+        }
+      }
+    }
   };
 
   // searchUsers
@@ -231,6 +345,8 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   // addFriend
   // заменить на POST /api/friends/request
+  // TODO: для демо заявка сразу 'accepted' (нет второго юзера для подтверждения).
+  //       На реальном бэке статус должен быть 'pending' до подтверждения получателем.
   const addFriend = (userId: string) => {
     const target = MOCK_SEARCHABLE_USERS.find((u) => u.id === userId);
     if (!user || !target) return;
@@ -247,7 +363,7 @@ export const ChatProvider: FC<{ children: ReactNode }> = ({ children }) => {
       {
         sender_id: user.id,
         receiver_id: userId,
-        status: 'pending',
+        status: 'accepted',
         created_at: now,
         updated_at: now,
       },

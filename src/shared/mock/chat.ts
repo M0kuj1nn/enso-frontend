@@ -12,9 +12,17 @@ export const CURRENT_USER: User = {
   id: 'me',
   username: '@abracadabra',
   name: 'MIDNIGHT',
-  avatar:
-    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
+  avatar: '/delete%20folder/antie.jpg',
   status: 'online',
+  job_title: 'Тестировщик чатов',
+  bio: 'Создаю цифровые интерфейсы днём, играю в инди-игры ночью. Увлечён UI/UX, дизайн-системами и идеальным оттенком фиолетового. Всегда открыт к интересным коллаборациям! 🚀✨',
+  connections: {
+    twitter: 'https://twitter.com/abracadabra',
+    github: 'https://github.com/abracadabra',
+    dribbble: 'https://dribbble.com/abracadabra',
+    linkedin: 'https://linkedin.com/in/abracadabra',
+    website: 'https://abracadabra.dev',
+  },
 };
 
 // Пользователи для поиска при добавлении друга
@@ -64,6 +72,49 @@ export const MOCK_SEARCHABLE_USERS: User[] = [
     status: 'online',
     job_title: 'Старший Дизайнер',
   },
+  {
+    id: 'u6',
+    username: '@oliviam',
+    name: 'Olivia Martinez',
+    avatar:
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
+    status: 'online',
+    job_title: 'UX-Исследователь',
+  },
+  {
+    id: 'u7',
+    username: '@jameswilson',
+    name: 'James Wilson',
+    avatar:
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop',
+    status: 'offline',
+    job_title: 'Frontend-разработчик',
+  },
+  {
+    id: 'u8',
+    username: '@sophialee',
+    name: 'Sophia Lee',
+    avatar:
+      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop',
+    status: 'away',
+    job_title: 'Менеджер по маркетингу',
+  },
+  {
+    id: 'u9',
+    username: '@midnight',
+    name: 'Midnight',
+    avatar: '/delete%20folder/eye.JPG',
+    status: 'online',
+    job_title: 'Геймдизайнер',
+  },
+  {
+    id: 'u10',
+    username: '@nikitos',
+    name: 'Nikitos',
+    avatar: '/delete%20folder/catjo.JPG',
+    status: 'online',
+    job_title: 'Backend-разработчик',
+  },
 ];
 
 // Связи текущего пользователя с другими (дружба/заявки/блокировки).
@@ -90,55 +141,25 @@ export const MOCK_RELATIONSHIPS: Relationship[] = [
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-01-01T00:00:00Z',
   },
+  {
+    sender_id: 'me',
+    receiver_id: 'u9', // Midnight
+    status: 'accepted',
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  },
+  {
+    sender_id: 'me',
+    receiver_id: 'u10', // Nikitos
+    status: 'accepted',
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  },
 ];
 
-export const MOCK_CHATS: Chat[] = [
-  {
-    id: '1',
-    type: 'group',
-    name: 'Design Team',
-    avatar:
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&h=100&fit=crop',
-    lastMessage:
-      'Запланировала ревью дизайна на завтра в 14:00. Скоро пришлю приглашения.',
-    lastMessageSenderName: 'Sarah',
-    unread: 7,
-    participantIds: ['me', 'u1', 'u2', 'u3'],
-  },
-  {
-    id: '2',
-    type: 'dm',
-    name: 'Sarah Chen',
-    avatar:
-      'https://images.unsplash.com/photo-1573497620166-aef748c8c792?w=100&h=100&fit=crop',
-    lastMessage: 'Можем провести быстрый созвон?',
-    lastMessageSenderName: undefined,
-    unread: 1,
-    participantIds: ['me', 'u1'],
-  },
-  {
-    id: '3',
-    type: 'dm',
-    name: 'Marcus Johnson',
-    avatar:
-      'https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?w=100&h=100&fit=crop',
-    lastMessage: 'Спасибо за фидбек!',
-    lastMessageSenderName: undefined,
-    unread: 0,
-    participantIds: ['me', 'u2'],
-  },
-  {
-    id: '4',
-    type: 'dm',
-    name: 'Emily Rodriguez',
-    avatar:
-      'https://images.unsplash.com/photo-1752860872185-78926b52ef77?w=100&h=100&fit=crop',
-    lastMessage: 'Дизайн выглядит идеально 🎨',
-    lastMessageSenderName: undefined,
-    unread: 0,
-    participantIds: ['me', 'u3'],
-  },
-];
+// Пусто для демо: чаты/группы создаются вживую на записи
+// (добавление в друзья, создание группового чата, переписка)
+export const MOCK_CHATS: Chat[] = [];
 
 // Хелпер для создания мок-сообщения
 const msg = (
@@ -168,87 +189,6 @@ const msg = (
 });
 
 export const MOCK_MESSAGES: Record<string, ChatMessage[]> = {
-  '1': [
-    msg(
-      'm1',
-      '1',
-      'u1',
-      'Sarah Chen',
-      MOCK_SEARCHABLE_USERS[0].avatar,
-      'Привет команда! Только что загрузила последние макеты. Жду фидбек до конца дня.',
-      '9:23',
-    ),
-    msg(
-      'm2',
-      '1',
-      'u2',
-      'Marcus Johnson',
-      MOCK_SEARCHABLE_USERS[1].avatar,
-      'Выглядит отлично! Только вопрос — нужно ли скорректировать отступы на мобайле?',
-      '9:45',
-    ),
-    msg(
-      'm3',
-      '1',
-      'me',
-      'You',
-      CURRENT_USER.avatar,
-      'Хорошее замечание! Внесу правки и выложу новую версию сегодня днём.',
-      '10:12',
-      true,
-    ),
-    msg(
-      'm4',
-      '1',
-      'me',
-      'You',
-      CURRENT_USER.avatar,
-      'Также работаю над мобильной адаптацией.',
-      '10:12',
-      true,
-    ),
-    msg(
-      'm5',
-      '1',
-      'u3',
-      'Emily Rodriguez',
-      MOCK_SEARCHABLE_USERS[2].avatar,
-      'Смотрится великолепно! Не могу дождаться финала 🚀',
-      '10:34',
-    ),
-    msg(
-      'm6',
-      '1',
-      'u1',
-      'Sarah Chen',
-      MOCK_SEARCHABLE_USERS[0].avatar,
-      'Запланировала ревью дизайна на завтра в 14:00. Скоро пришлю приглашения.',
-      '11:08',
-    ),
-  ],
-  '2': [
-    msg(
-      'm7',
-      '2',
-      'u1',
-      'Sarah Chen',
-      MOCK_SEARCHABLE_USERS[0].avatar,
-      'Можем провести быстрый созвон?',
-      '14:00',
-    ),
-  ],
-  '3': [
-    msg(
-      'm8',
-      '3',
-      'u2',
-      'Marcus Johnson',
-      MOCK_SEARCHABLE_USERS[1].avatar,
-      'Спасибо за фидбек!',
-      '13:15',
-    ),
-  ],
-  '4': [],
   tc1: [
     msg(
       'tc1m1',

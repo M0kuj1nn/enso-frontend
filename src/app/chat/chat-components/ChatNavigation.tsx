@@ -33,6 +33,7 @@ import { CreateServerModal } from './CreateServerModal';
 import { NewChatModal } from './NewChatModal';
 import { ServerNavPanel } from './ServerNavPanel';
 import { UserPanel } from './UserPanel';
+import { UserProfileModal } from './UserProfileModal';
 
 // ChatItem
 interface ChatItemProps {
@@ -354,6 +355,7 @@ export const ChatNavigation: FC = () => {
 
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [volume, setVolume] = useState(0);
   const [isAddFriendOpen, setIsAddFriendOpen] = useState(false);
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
@@ -482,6 +484,7 @@ export const ChatNavigation: FC = () => {
             isDeafened={isDeafened}
             onToggleMic={() => setIsMuted((v) => !v)}
             onToggleDeafen={() => setIsDeafened((v) => !v)}
+            onOpenProfile={() => setIsProfileOpen(true)}
             onOpenSettings={() => {}}
             onLeaveVoice={handleLeaveVoice}
             onToggleStream={
@@ -495,6 +498,12 @@ export const ChatNavigation: FC = () => {
         </div>
       </Container>
 
+      <UserProfileModal
+        user={currentUser}
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        onOpenSettings={() => setIsProfileOpen(false)}
+      />
       <AddFriendModal
         isOpen={isAddFriendOpen}
         onClose={() => setIsAddFriendOpen(false)}

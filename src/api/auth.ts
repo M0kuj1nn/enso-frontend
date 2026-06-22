@@ -20,9 +20,17 @@ const MOCK_USERS: MockUser[] = [
     email: 'jonsnow@email.com',
     password: 'YouKnowNothingJonSnow789',
     username: '@jonsnow',
-    avatar:
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
+    avatar: '/delete%20folder/antie.jpg',
     status: 'online',
+    job_title: 'Тестировщик чатов',
+    bio: 'Создаю цифровые интерфейсы днём, играю в инди-игры ночью. Увлечён UI/UX, дизайн-системами и идеальным оттенком фиолетового. Всегда открыт к интересным коллаборациям! 🚀✨',
+    connections: {
+      twitter: 'https://twitter.com/abracadabra',
+      github: 'https://github.com/AEvchenko',
+      dribbble: 'https://dribbble.com/abracadabra',
+      linkedin: 'https://linkedin.com/in/abracadabra',
+      website: 'https://abracadabra.dev',
+    },
   },
 ];
 
@@ -47,9 +55,17 @@ export const registerRequest = async (data: RegisterData): Promise<User> => {
     email: data.email,
     password: data.password,
     username: `@${data.name.toLowerCase().replace(/\s/g, '')}`,
-    avatar:
-      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
+    avatar: '/delete%20folder/antie.jpg',
     status: 'online',
+    job_title: 'Тестировщик чатов',
+    bio: 'Создаю цифровые интерфейсы днём, играю в инди-игры ночью. Увлечён UI/UX, дизайн-системами и идеальным оттенком фиолетового. Всегда открыт к интересным коллаборациям! 🚀✨',
+    connections: {
+      twitter: 'https://twitter.com/abracadabra',
+      github: 'https://github.com/abracadabra',
+      dribbble: 'https://dribbble.com/abracadabra',
+      linkedin: 'https://linkedin.com/in/abracadabra',
+      website: 'https://abracadabra.dev',
+    },
   };
   MOCK_USERS.push(newUser);
   const { email, password, ...userData } = newUser;

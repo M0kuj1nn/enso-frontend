@@ -37,6 +37,7 @@ export interface UserPanelProps {
   onToggleMic: () => void;
   onToggleDeafen: () => void;
   onOpenSettings: () => void;
+  onOpenProfile: () => void;
   onLeaveVoice?: () => void;
   onToggleCamera?: () => void;
   onToggleStream?: () => void;
@@ -119,123 +120,182 @@ const ExpandedPanel: FC<UserPanelProps> = ({
   onToggleMic,
   onToggleDeafen,
   onOpenSettings,
+  onOpenProfile,
   onLeaveVoice,
   onToggleCamera,
   onToggleStream,
   isStreaming,
   isCameraOn,
-}) => (
-  <Container
-    variantsUi={{ flow: 'col', style: 'blackglass', rounded: '2xl' }}
-    className='mx-2 mb-3 gap-0 overflow-hidden p-1'
-  >
-    {/* Голосовой канал */}
-    {voiceChannel && (
-      <Container className='items-center gap-2 border-b border-white/5 px-3 py-2.5'>
-        <div className='h-8 w-1 shrink-0 rounded-full bg-emerald-400' />
+}) => {
+  const [tagCopied, setTagCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const handleCopyTag = () => {
+    navigator.clipboard.writeText(userTag);
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    setTagCopied(true);
+    copyTimerRef.current = setTimeout(() => setTagCopied(false), 1500);
+  };
+
+  return (
+    <Container
+      variantsUi={{ flow: 'col', style: 'blackglass', rounded: '2xl' }}
+      className='mx-2 mb-3 gap-0 overflow-hidden p-1'
+    >
+      {/* Голосовой канал */}
+      {voiceChannel && (
+        <Container className='items-center gap-2 border-b border-white/5 px-3 py-2.5'>
+          <div className='h-8 w-1 shrink-0 rounded-full bg-emerald-400' />
+
+          <Container
+            variantsUi={{ flow: 'col' }}
+            className='min-w-0 flex-1 gap-0 p-0'
+          >
+            <Text
+              variantsUi={{ size: 'xs', color: 'muted' }}
+              className='truncate tracking-wide uppercase'
+            >
+              {voiceChannel.serverName}
+            </Text>
+            <Text
+              variantsUi={{ size: 'xs' }}
+              className='truncate text-white/80'
+            >
+              {voiceChannel.channelName}
+            </Text>
+          </Container>
+
+          <Container className='items-center gap-1.5 p-0'>
+            <IconBtn
+              onClick={onToggleCamera}
+              active={isCameraOn}
+              title={isCameraOn ? 'Выключить камеру' : 'Включить камеру'}
+            >
+              {isCameraOn ? (
+                <Video className='h-[18] w-[18]' />
+              ) : (
+                <VideoOff className='h-[18] w-[18]' />
+              )}
+            </IconBtn>
+            <IconBtn
+              onClick={onToggleStream}
+              active={isStreaming}
+              title={
+                isStreaming ? 'Остановить трансляцию' : 'Трансляция экрана'
+              }
+            >
+              <Monitor className='h-[18] w-[18]' />
+            </IconBtn>
+            <IconBtn
+              onClick={onLeaveVoice}
+              active
+              danger
+              title='Покинуть канал'
+            >
+              <PhoneOff className='h-[18] w-[18]' />
+            </IconBtn>
+          </Container>
+        </Container>
+      )}
+
+      {/* Основная строка пользователя */}
+      <Container className='items-center gap-2.5 px-3 py-2.5'>
+        {/* Аватар — открывает профиль */}
+        <button
+          type='button'
+          className='shrink-0 cursor-pointer rounded-full transition-opacity hover:opacity-80'
+          onClick={onOpenProfile}
+          title='Открыть профиль'
+        >
+          <Avatar
+            src={userAvatar}
+            alt={userName}
+            size='md'
+            shape='circle'
+            status={userStatus}
+          />
+        </button>
+
+        {/* Имя + тег */}
         <Container
           variantsUi={{ flow: 'col' }}
           className='min-w-0 flex-1 gap-0 p-0'
         >
-          <Text
-            variantsUi={{ size: 'xs', color: 'muted' }}
-            className='truncate tracking-wide uppercase'
+          {/* Ник — открывает профиль */}
+          <button
+            type='button'
+            className='w-full cursor-pointer truncate text-left transition-opacity hover:opacity-80'
+            onClick={onOpenProfile}
+            title='Открыть профиль'
           >
-            {voiceChannel.serverName}
-          </Text>
-          <Text variantsUi={{ size: 'xs' }} className='truncate text-white/80'>
-            {voiceChannel.channelName}
-          </Text>
+            <Text
+              variantsUi={{ size: 'sm', weight: 'semibold' }}
+              className='truncate'
+            >
+              {userName}
+            </Text>
+          </button>
+
+          {/* @username — копирует в буфер обмена */}
+          <div className='relative'>
+            <button
+              type='button'
+              className='w-full cursor-pointer truncate text-left transition-opacity hover:opacity-80'
+              onClick={handleCopyTag}
+              title='Скопировать @username'
+            >
+              <Text
+                variantsUi={{ size: 'xs', color: 'muted' }}
+                className='truncate'
+              >
+                {userTag}
+              </Text>
+            </button>
+            <span
+              className={`pointer-events-none absolute bottom-full left-0 mb-1.5 rounded-lg bg-[#A74BE9] px-2 py-0.5 text-xs font-medium whitespace-nowrap text-white shadow-lg transition-all duration-200 ${tagCopied ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-0'}`}
+            >
+              Copied!
+            </span>
+          </div>
         </Container>
 
         <Container className='items-center gap-1.5 p-0'>
           <IconBtn
-            onClick={onToggleCamera}
-            active={isCameraOn}
-            title={isCameraOn ? 'Выключить камеру' : 'Включить камеру'}
+            onClick={onToggleMic}
+            active={isMicMuted}
+            danger
+            title={isMicMuted ? 'Включить микрофон' : 'Выключить микрофон'}
+            size='sm'
           >
-            {isCameraOn ? (
-              <Video className='h-[18] w-[18]' />
+            {isMicMuted ? (
+              <MicOff className='h-4 w-4' />
             ) : (
-              <VideoOff className='h-[18] w-[18]' />
+              <Mic className='h-4 w-4' />
             )}
           </IconBtn>
+
           <IconBtn
-            onClick={onToggleStream}
-            active={isStreaming}
-            title={isStreaming ? 'Остановить трансляцию' : 'Трансляция экрана'}
+            onClick={onToggleDeafen}
+            active={isDeafened}
+            danger
+            title={isDeafened ? 'Включить звук' : 'Выключить звук'}
+            size='sm'
           >
-            <Monitor className='h-[18] w-[18]' />
+            {isDeafened ? (
+              <VolumeX className='h-4 w-4' />
+            ) : (
+              <Headphones className='h-4 w-4' />
+            )}
           </IconBtn>
-          <IconBtn onClick={onLeaveVoice} active danger title='Покинуть канал'>
-            <PhoneOff className='h-[18] w-[18]' />
+
+          <IconBtn onClick={onOpenSettings} title='Настройки' size='sm'>
+            <Settings className='h-4 w-4' />
           </IconBtn>
         </Container>
       </Container>
-    )}
-
-    {/* Основная строка пользователя */}
-    <Container className='items-center gap-2.5 px-3 py-2.5'>
-      <Avatar
-        src={userAvatar}
-        alt={userName}
-        size='md'
-        shape='circle'
-        status={userStatus}
-      />
-
-      <Container
-        variantsUi={{ flow: 'col' }}
-        className='min-w-0 flex-1 gap-0 p-0'
-      >
-        <Text
-          variantsUi={{ size: 'sm', weight: 'semibold' }}
-          className='truncate'
-        >
-          {userName}
-        </Text>
-        <Text variantsUi={{ size: 'xs', color: 'muted' }} className='truncate'>
-          {userTag}
-        </Text>
-      </Container>
-
-      <Container className='items-center gap-1.5 p-0'>
-        <IconBtn
-          onClick={onToggleMic}
-          active={isMicMuted}
-          danger
-          title={isMicMuted ? 'Включить микрофон' : 'Выключить микрофон'}
-          size='sm'
-        >
-          {isMicMuted ? (
-            <MicOff className='h-4 w-4' />
-          ) : (
-            <Mic className='h-4 w-4' />
-          )}
-        </IconBtn>
-
-        <IconBtn
-          onClick={onToggleDeafen}
-          active={isDeafened}
-          danger
-          title={isDeafened ? 'Включить звук' : 'Выключить звук'}
-          size='sm'
-        >
-          {isDeafened ? (
-            <VolumeX className='h-4 w-4' />
-          ) : (
-            <Headphones className='h-4 w-4' />
-          )}
-        </IconBtn>
-
-        <IconBtn onClick={onOpenSettings} title='Настройки' size='sm'>
-          <Settings className='h-4 w-4' />
-        </IconBtn>
-      </Container>
     </Container>
-  </Container>
-);
+  );
+};
 
 // Свёрнутая панель
 
@@ -248,6 +308,7 @@ const CollapsedPanel: FC<UserPanelProps> = ({
   onToggleMic,
   onToggleDeafen,
   onOpenSettings,
+  onOpenProfile,
   onLeaveVoice,
   onToggleCamera,
   onToggleStream,
@@ -327,13 +388,20 @@ const CollapsedPanel: FC<UserPanelProps> = ({
         variantsUi={{ flow: 'col', style: 'blackglass', rounded: 'xl' }}
         className='w-full items-center gap-3 px-2 py-3'
       >
-        <Avatar
-          src={userAvatar}
-          alt='me'
-          size='md'
-          shape='circle'
-          status={userStatus}
-        />
+        <button
+          type='button'
+          className='cursor-pointer rounded-full transition-opacity hover:opacity-80'
+          onClick={onOpenProfile}
+          title='Открыть профиль'
+        >
+          <Avatar
+            src={userAvatar}
+            alt='me'
+            size='md'
+            shape='circle'
+            status={userStatus}
+          />
+        </button>
 
         <IconBtn
           onClick={onToggleMic}
