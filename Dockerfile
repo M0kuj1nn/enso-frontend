@@ -1,5 +1,4 @@
-# 1. Сборка
-FROM node:20 AS builder
+FROM node:20 AS base
 
 WORKDIR /app
 
@@ -7,15 +6,26 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+
+# DEV
+FROM base AS dev
+
+CMD ["npm", "run", "dev"]
+
+# PROD BUILD
+FROM base AS builder
+
 RUN npm run build
 
-# 2. Продакшн
-FROM node:18
+# PROD
+FROM node:20-alpine AS prod
 
 WORKDIR /app
 
-COPY --from=builder /app ./
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-RUN npm install --production
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
 CMD ["npm", "start"]
